@@ -1,1 +1,22 @@
-hello world
+---
+layout: default
+title: Programming Tutorials
+---
+
+{% for post in site.posts %}
+  <h3><a href="{{ post.url }}">{{ post.title }}</a></h3>
+  {{ post.blurb }}
+  <em>Posted on {{ post.date | date_to_long_string }} in {{ post.category }}</em>
+{% endfor %}
+
+<hr />
+
+{% for category in site.categories %}
+  <h3>{{ category[0] }}</h3>
+  
+  <ul>
+    {% for post in category[1] %}
+      <li><a href="{{ post.url }}">{{ post.title }}</a></li>
+    {% endfor %}
+  </ul>
+{% endfor %}
