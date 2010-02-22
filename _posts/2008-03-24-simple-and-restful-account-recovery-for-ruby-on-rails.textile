@@ -1,0 +1,324 @@
+---
+layout: default
+title: Simple and Restful Account Recovery for Ruby on Rails
+category: Ruby on Rails
+---
+
+Continuing on with building a simple and restful user authentication system is allowing your users to recover their accounts.  Account recovery is necessary as user's have a knack for forgetting their passwords.  Often, I come across account recovery methods that are crufty or insecure. Such does not need to be the case, especially with Ruby on Rails.
+
+In this tutorial, you will use symmetric encryption to make secure forgotten password links that stop functioning after use. You will also use ActionMailer to email the link to the user's address of record.
+
+h3. Prerequisites
+
+"Simple and Restful Authentication for Ruby on Rails":/2008/02/23/simple-and-restful-authentication-for-ruby-on-rails.
+
+h3. Setting up OpenSSL and AES
+
+You will be using Ruby's OpenSSL library to encrypt and decrypt forgotten password links with AES (Advanced Encryption Standard).  OpenSSL has everything you need to build SSL (Secure Sockets Layer) and TLS (Transport Layer Security) functionality directly into your Ruby application. However, for this tutorial you will be focusing on OpenSSL's set of symmetric mechanisms.
+
+To get started, require the OpenSSL and SHA2 digest libraries.  Next, open a new module called Crypto and set the KEY constant to something you would consider a secret.  Keep in mind, if this key gets out into the open, you leave your application open to major attacks, so keep it hush hush.
+
+Next, make a private start module method that will prep AES in in the same way for encryption and decryption and place it at the end of your module.  Specifically, you will be using 256 bit AES in ECB (Electronic Code Book) mode.  Although there are more secure ways to run AES, ECB is more then sufficient for small strings and very easy to setup.  Also, run your key through an 256 bit SHA2 digest to ensure it is 256 bits in length.
+
+bq. *What are block cipher modes?* ECB is one of many different ways to run AES, however another common (and more secure) way is CBC (Cipher Block Chaining).  AES in ECB mode will first break your plain text into a group of 128 bit blocks, encrypt each block and concatenate them in order to make a ciphered message.  This is good for small strings (especially strings that fit within one block), but not so much when sending larger messages.
+
+bq. AES in CBC mode will exclusively-or (X-OR) each plain text block with the previous cipher text block before encryption.  Doing so makes each every block of cipher text rely on the previous, and as such, makes cryptanalysis much more difficult.  However, starting the process requires a block of text to X-OR the initial block with.  This initial block is called an initialization vector (IV) and should be set and safeguarded in similar fashion as your secret key.
+
+bq. Learn more about AES "here":http://en.wikipedia.org/wiki/Advanced_Encryption_Standard and block cipher modes "here":http://en.wikipedia.org/wiki/Block_cipher_modes_of_operation.
+
+Now that your crypto is setup, build an encryption module method.  The workings are simple.  First, start your crypto in encryption mode.  Next, pile your plain text string into the your crypto's update method and finish the cipher text output.  The final step is to encode the string in hexadecimal, so it can be sent in a url.
+
+The reverse is simple too, just convert the hexadecimal string back into characters and decrypt it.  Save this file in your project's /lib directory and you are all set.
+
+*lib/crypto.rb*
+
+{% highlight ruby %}
+require 'openssl'
+require 'digest/sha2'
+
+module Crypto
+  KEY = "change this to something long and hard to guess"
+      
+  def self.encrypt(plain_text)
+    crypto = start(:encrypt)
+
+    cipher_text = crypto.update(plain_text)
+    cipher_text << crypto.final
+
+    cipher_hex = cipher_text.unpack("H*").join
+
+    return cipher_hex
+  end
+  
+  def self.decrypt(cipher_hex)
+    crypto = start(:decrypt)
+    
+    cipher_text = cipher_hex.gsub(/(..)/){|h| h.hex.chr}
+    
+    plain_text = crypto.update(cipher_text)
+    plain_text << crypto.final
+
+    return plain_text
+  end
+
+  private
+
+  def self.start(mode)
+    crypto = OpenSSL::Cipher::Cipher.new('aes-256-ecb').send(mode)
+    crypto.key = Digest::SHA256.hexdigest(KEY)
+    return crypto
+  end
+end
+{% endhighlight %}
+
+h3. Migrations
+
+The next step is to migrate your database to include email address for your users.  Just build your migration as below and run rake db:migrate.
+
+{% highlight bash %}
+script/generate migration add_email_to_person
+{% endhighlight %}
+
+*db/migrate/003_add_email_to_person.rb*
+
+{% highlight ruby %}
+class AddEmailToPerson < ActiveRecord::Migration
+  def self.up
+    add_column :people, :email, :string
+  end
+
+  def self.down
+    drop_column :people, :email
+  end
+end
+{% endhighlight %}
+
+h3. The Person Model
+
+Now that your database is migrated, it is time to ensure the email addresses given by your users are valid.  To do this, you will match every email address with a regular expression.
+
+*app/models/person.rb*
+
+{% highlight ruby %}
+require 'digest/sha2'
+ 
+class Person < ActiveRecord::Base
+  
+  ...
+  
+  validates_format_of :email, :with => /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}/i,
+                      :message => "must be a valid address"
+  
+  ...
+
+end
+{% endhighlight %}
+
+h3. Routing
+
+Next step is to add a few customized routes as you will be going beyond basic CRUD actions with account recovery.
+
+*config/routes.rb*
+
+{% highlight ruby %}
+ActionController::Routing::Routes.draw do |map|
+  map.root :controller => 'people'
+  
+  map.resources :sessions,
+                :member => {:recovery => :get}
+  
+  map.resources :people,
+                :collection => {:help => :get, :recover => :post}
+ 
+  # map.connect ':controller/:action/:id'
+  # map.connect ':controller/:action/:id.:format'
+end
+{% endhighlight %}
+
+h3. The People Controller
+
+Your recover action will search for a user with the name given by a POST request.  If the user exists, send them an email with a recovery key embedded link.  The key has two parts, the user's id and their salt.  Passing the salt has two purposes.  First, as the salt changes whenever the user updates their password, the link will become ineffective after it has served its purpose.  Second, It provides extra security if an attacker were to get your application's source code or encryption key as the salt comes from the database.  Finally, pass the recovery key, user's email address and the server's host name to the mail delivery method so you can construct a complete email.
+
+*NOTE: request.env['HTTP_HOST'] may not function properly when using mongrel behind a load balancer.  If this is the case, you will have to hardcode the domain into your mail delivery method.*
+
+*app/controllers/people_controller.rb*
+
+{% highlight ruby %}
+class PeopleController < ApplicationController
+  before_filter :ensure_login, :only => [:edit, :update, :destroy]
+  before_filter :ensure_logout, :only => [:new, :create, :help, :recover]
+ 
+  ...
+  
+  def recover
+    person = Person.find_by_name(params[:name])
+    if person
+      Mailer.deliver_recovery(:key => Crypto.encrypt("#{person.id}:#{person.salt}"),
+                              :email => person.email,
+                              :domain => request.env['HTTP_HOST'])
+      flash[:notice] = "Please check your email"
+      redirect_to(root_url)
+    else
+      flash[:notice] = "Your account could not be found"
+      redirect_to(help_people_path)
+    end
+  end
+ 
+  ...
+  
+end
+{% endhighlight %}
+
+h3. The Sessions Controller
+
+First off, decrypt the key and split it into the user's id and salt.  Next, find the user's record in the people table and confirm that their salt matches.  If so, log the user in and redirect them to the edit account page with a friendly reminder to change their password.
+
+*app/controllers/sessions_controller.rb*
+
+{% highlight ruby %}
+class SessionsController < ApplicationController
+  before_filter :ensure_login, :only => :destroy
+  before_filter :ensure_logout, :only => [:new, :create, :recovery]
+ 
+  ...
+  
+  def recovery
+    begin
+      key = Crypto.decrypt(params[:id]).split(/:/)
+      @session = Person.find(key[0], :conditions => {:salt => key[1]}).sessions.create
+      session[:id] = @session.id
+      flash[:notice] = "Please change your password"
+      redirect_to(edit_person_path('account'))
+    rescue ActiveRecord::RecordNotFound
+      flash[:notice] = "The recovery link given is not valid"
+      redirect_to(root_url)
+    end
+  end
+ 
+  ...
+
+end
+{% endhighlight %}
+
+h3. Mailer
+
+ActionMailer methods include the basic properties of any email (sender, recipient, subject and body), however also let you pass variables into body text.  Build yours as below.
+
+{% highlight bash %}
+script/generate mailer Mailer
+{% endhighlight %}
+
+*app/models/mailer.rb*
+
+{% highlight ruby %}
+class Mailer < ActionMailer::Base
+  def recovery(options)
+    from "Simple and Restful Account Recovery <name@domain.com>"
+    recipients options[:email]
+    subject "Simple and Restful Account Recovery"
+    content_type 'text/html'
+    
+    body :key => options[:key], :domain => options[:domain]
+  end
+end
+{% endhighlight %}
+
+Next step is to setup your ActionMailer settings in envrionment.rb.  At the end of your Rails::Initializer.run block, start a new block called ActionMailer::Base.smtp_settings.  Then, configure the account you will use to send forgotten password links.
+
+*config/environment.rb*
+
+{% highlight ruby %}
+# Be sure to restart your server when you modify this file
+
+...
+
+Rails::Initializer.run do |config|
+  # Settings in config/environments/* take precedence over those specified here.
+  # Application configuration should go into files in config/initializers
+  # -- all .rb files in that directory are automatically loaded.
+  # See Rails::Configuration for more options.
+
+  ...
+
+  # Make Active Record use UTC-base instead of local time
+  # config.active_record.default_timezone = :utc
+end
+
+ActionMailer::Base.smtp_settings = {
+  :address => "mail.domain.com",
+  :port => 25,
+  :domain => "domain.com",
+  :authentication => :login,
+  :user_name => "name@domain.com",
+  :password => "password"
+}
+{% endhighlight %}
+
+Also, remember to configure Rails to give delivery errors while you are fiddling with your mail server settings.  By default, Rails is set to be silent about any problems.
+
+*config/environments/development.rb*
+
+{% highlight ruby %}
+# Don't care if the mailer can't send
+config.action_mailer.raise_delivery_errors = true
+{% endhighlight %}
+
+h3. Views
+
+Getting your views ready is a three step process.  First, add the "Help" link to your layout.
+
+*app/views/layouts/application.html.erb*
+
+{% highlight rhtml %}
+...
+
+<% else %>
+  <%= link_to "Login", new_session_path %> -
+  <%= link_to "Register", new_person_path %> -
+  <%= link_to "Help", help_people_path %>
+<% end %>
+
+...
+{% endhighlight %}
+
+Next, create your Help view.
+
+*app/views/people/help.html.erb*
+
+{% highlight rhtml %}
+<fieldset>
+  <legend>Help</legend>
+
+<p>
+  If you have forgotten your password, enter your name below and click the "Recover My Account" button.<br />
+  <br />
+  An email will be sent with a link to your address on record. Click this link to login and change your password.<br />
+  <br />
+  The link given will no longer function after your password is changed. 
+</p>
+
+<% form_tag recover_people_path, :method => :post do %>
+  
+  <label for="person_name">Name:</label><br />
+  <%= text_field_tag :name %><br />
+  
+  <%= submit_tag "Recovery My Account" %>
+  
+<% end %>
+
+</fieldset>
+{% endhighlight %}
+
+And finally, your mailer view.
+
+*app/views/mailer/recovery.html.erb*
+
+{% highlight rhtml %}
+Please click the following link to recover your account:<br />
+<br />
+<%= link_to "http://#{@domain}#{recovery_session_path(@key)}", "http://#{@domain}#{recovery_session_path(@key)}" %>
+{% endhighlight %}
+
+h3. Conclusion
+
+Your application now has a simple and very secure way to handle forgotten passwords.  You also broke into Ruby's OpenSSL library and are prepped to delve deeper into using proven cryptographic mechanisms to secure your application from malicious use.  Finally, you also also created customized RESTful routes, thus adding functionality without building a new model.

@@ -1,0 +1,170 @@
+---
+layout: default
+title: Up and Running with Custom RSpec Matchers
+category: Ruby
+---
+
+RSpec continues to gain popularity among the Ruby community, and rightfully so.  With RSpec, testing becomes much easier, and dare I say, kind of fun.  The reason RSpec is great (at least for me) centers around two things, nested test cases and easy to write matchers.  However, as much as I see RSpec users taking advantage of the former benefit, I still do not see many writing custom matchers.  As such, this tutorial aims to show how simple and flexable RSpec matchers are.
+
+h3. Getting Started
+
+Lets keep things easy and center our tests around a very simple method, @one_plus@, and stuff it into a file called "one_plus.rb"
+
+{% highlight ruby linenos %}
+def one_plus(number)
+  1 + number
+end
+{% endhighlight %}
+
+The purpose of one_plus is just to add one to any number we pass to it.  Although we are pretty sure it will work as anticipated, lets spec it out anyway for good measure.  First, ensure you have the latest rspec gem installed from "GitHub":http://github.com/dchelimsky/rspec.  Then, make a new file called "one_plus_spec.rb" and fill it in with the following:
+
+{% highlight ruby linenos %}
+require 'rubygems'
+require 'spec'
+require 'one_plus'
+
+describe 'the one_plus method' do
+  it 'should add one to a number' do
+    one_plus(1).should == 2
+    one_plus(0).should_not == 2
+  end
+end
+{% endhighlight %}
+
+Once you have that setup, spec it out to see if everything works as it should:
+
+{% highlight ruby linenos %}
+$ spec one_plus_spec.rb 
+.
+
+Finished in 0.015592 seconds
+
+1 example, 0 failures
+{% endhighlight %}
+  
+Great, our one_plus method is working exactly as we want it to, however I don't like the syntax of our test and think we can do better.  After all, RSpec is supposed to keep our test readable and @one_plus(1).should == 2@ just isn't doing it for me.
+
+h3. Diving Into Custom Matchers
+
+RSpec has an easy to use, albeit unique, manner of letting developers write their own custom matchers.  Just for clarification, matchers are the methods that come right after the @should@ or @should_not@ methods on your tests.  These should and should not expectations can be passed to any object and tell RSpec to check that the end result of the expression is true.  In our above example, we just checked the actual result with Ruby's equality operator, but we want something more "Englishy".  Lets get to work.
+
+Start off by creating a new file called "matchers.rb" and adding the following matcher to it.  Don't worry if everything seems new to you, we will go over it next.
+
+{% highlight ruby linenos %}
+module Matchers
+  class BeTwo
+    def matches?(actual)
+      @actual = actual
+      @actual == 2
+    end
+
+    def failure_message
+      "expected 2 but got '#{@actual}'"
+    end
+
+    def negative_failure_message
+      "expected something else then 2 but got '#{@actual}'"
+    end
+  end
+
+  def be_two
+    BeTwo.new
+  end
+
+  alias :equal_two :be_two
+end
+{% endhighlight %}
+
+So, lets see what we have here.
+
+# First, make a new module called Matchers.  This module can hold multiple matchers and be called anything you wish, so I would make it as descriptive as possible.
+# Next, define a new class called BeTwo.
+# Within the heart of our matcher is the @matches?@ method.  This method takes one parameter, the actual value of the object that the @should@ or @should_not@ method is passed to within your RSpec test.  In the above example, this is @one_plus(1)@ (which equals 2).  We then want to return a boolean value, so we test the equality of our expected value (for this matcher, 2) with our actual value (in the above case, either 2 or 1).
+# Next up, writing the failure messages, of which there can be two.  The @failure_message@ method is used when your test fails a @should@ expectation while the @negative_failure_message@ is used when your test fails a @should_not@ expectation.
+# Finally, define the method that you will use to call this matcher, along with any aliases you deem appropriate.
+
+Thats it, you now have a fully functional matcher that will ensure that any value equals 2, how useful.  Lets see it in action.
+
+h3. Using Custom Matchers
+
+Now that you have your "matchers.rb" file setup, require it into your "one_plus_spec.rb" file and make your @Matchers@ module available to RSpec.  Then, start using it in your your tests:
+
+{% highlight ruby linenos %}
+require 'rubygems'
+require 'spec'
+require 'one_plus'
+require 'matchers'
+
+Spec::Runner.configure do |config|  
+  config.include(Matchers)  
+end
+
+describe 'the one_plus method' do
+  it 'should add one to a number' do
+    one_plus(1).should be_two
+    one_plus(0).should_not be_two
+
+    one_plus(1).should equal_two
+    one_plus(0).should_not equal_two
+  end
+end
+{% endhighlight %}
+
+That looks a lot better. Notice that you not only have your new matcher available, but you can use your choice of either @be_two@ or @equal_two@.  Obviously, there is no need to have both in a test as they are the same exact matcher. This does help however, when the rules of the English language dictate so (e.g. "the_car.should have_wheels" vs. "the_wheelbarrow.should have_a_wheel").
+
+There is one problem with our custom matcher, it is not very generic.  If we want to ensure we get the number 3, 4, 5 and up, that will require quite a few matchers to be built.  As such, lets write another matcher that lets us pass a parameter.
+
+h3. Back to the Drawing Board
+
+Go back to your "matchers.rb" file and make a new matcher called @AddUpTo@:
+
+{% highlight ruby linenos %}
+module Matchers  
+  class AddUpTo
+    def initialize(expected)
+      @expected = expected
+    end
+
+    def matches?(actual)
+      @actual = actual
+      @actual == @expected
+    end
+
+    def failure_message
+      "expected '#{@expected}' but got '#{@actual}'"
+    end
+
+    def negative_failure_message
+      "expected something else then '#{@expected}' but got '#{@actual}'"
+    end
+  end
+
+  def add_up_to(expected)
+    AddUpTo.new(expected)
+  end
+end
+{% endhighlight %}
+
+Notice how it looks almost like your previous matcher, but also defines an initialize method.  By initializing your matcher, you can now pass any parameters given to it over to the @matches?@ method.  As such, we can make a flexible matcher that is also very readable.  Lets see how it looks in our RSpec test.
+
+{% highlight ruby linenos %}
+require 'rubygems'
+require 'spec'
+require 'one_plus'
+require 'matchers'
+
+Spec::Runner.configure do |config|  
+  config.include(Matchers)  
+end
+
+describe 'the one_plus method' do
+  it 'should add one to a number' do
+    one_plus(1).should add_up_to(2)
+    one_plus(0).should_not add_up_to(2)
+  end
+end
+{% endhighlight %}
+
+h3. Conclusion
+
+Making RSpec matchers is not only simple, but keeps your tests looking clean and readable.  The key is to keep your matchers generic enough that they can be used across quite a few cases, but specific enough that the test makes sense just by looking at it.  Once you get the hang of doing so, keeping your test coverage up and relevant will never be easier.

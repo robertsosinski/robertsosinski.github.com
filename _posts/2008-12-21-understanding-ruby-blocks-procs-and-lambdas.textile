@@ -24,11 +24,9 @@ puts array.inspect
 
 So, what is going on here?  
 
-
 # First, we send the @collect!@ method to an Array with a block of code.
 # The code block interacts with a variable used within the @collect!@ method (@n@ in this case) and squares it.
 # Each element inside the array is now squared.
-
 
 Using a block with the @collect!@ method is pretty easy, we just have to think that @collect!@ will use the code provided within the block on each element in the array.  However, what if we want to make our own @collect!@ method?  What will it look like? Well, lets build a method called @iterate!@ and see.
 
@@ -56,13 +54,11 @@ To start off, we re-opened the Array class and put our @iterate!@ method inside.
 
 Unlike attributes, you do not need to specify the name of blocks within your methods.  Instead, you can use the yield keyword.  Calling this keyword will execute the code within the block provided to the method.  Also, notice how we are passing @n@ (the integer that the @each_with_index@ method is currently working with) to yield.  The attributes passed to yield corresponds to the variable specified in the piped list of the block (line 13). That value is now available to the block and returned by the yield call.  So to recap what is happening:
 
-
 # Send @iterate!@ to the Array of numbers.
 # When yield is called with the number @n@ (first time is @1@, second time is @2@, etc...), pass the number to the block of code given.
 # The block has the number available (also called @n@) and squares it.  As it is the last value handled by the block, it is returned automatically.
 # Yield outputs the value returned by the block, and rewrites the value in the array.
 # This continues for each element in the array.
-
 
 What we now have is a flexible way to interact with our method.  Think of blocks as giving your method an "API":http://en.wikipedia.org/wiki/API, where you can determine to square each value of the array, cube them or convert each number to a string and print them to the screen.  The options are infinite, making your method very flexible, and as such, very powerful.
 

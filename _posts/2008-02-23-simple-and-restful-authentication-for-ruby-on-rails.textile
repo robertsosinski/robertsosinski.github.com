@@ -1,0 +1,501 @@
+---
+layout: default
+title: Simple and Restful Authentication for Ruby on Rails
+category: Ruby on Rails
+---
+
+Ruby on Rails seems to be driving more and more toward RESTful programming.  However, my search for ideas on how to make a truly RESTful authentication system came up pretty dry.  I either found systems that were not as RESTful as I wanted or far to complex then I deemed necessary. As such, I gave some thought on how to make my own.
+
+The result was creating a very simple, flexible and RESTful system. By seeing how I made it, you will also learn more about RESTful programming, understand how to use it within Rails and experience how it keeps your code base lean and clean.
+
+h3. A REST Primer
+
+REST (Representational State Transfer) is a programming concept in which you build your web application to only process basic CRUD (Create Read Update and Delete) operations.  This limitation may make RESTful programming difficult at first; however, the benefits are well worth the learning curve.  First, your program will have much less code overall, especially in your controllers.  Secondly, your code will be much easier to read, which is very important when other developers start working with your code base. Finally, as Ruby is fully object oriented, it makes sense that well developed models (which are objects) should only require CRUD operations anyway.  As such, RESTful programming will feel much more natural as you continue working with Ruby.
+
+A good frame of mind for building RESTful web applications is to spend most of your time thinking about your models.  Smart models should know how to find, create, update and ultimately destroy themselves and their related objects whenever necessary.  Once you have smart models, controllers can focus on taking parameters from your users and yielding appropriate responses in the proper format, be it HTML, Javascript, XML or RSS.
+
+At the end of the day, all of this will make for more organized and flexible code base.
+
+h3. Starting Off
+
+Start your Rails project and generate your Session and Person resources
+
+{% highlight bash %}
+$ rails simple_and_restful -d mysql
+  ...
+$ ruby script/generate resource session
+  ...
+$ ruby script/generate resource person
+  ...
+{% endhighlight %}
+
+Now, edit your database.yml file, create your database and start your server.
+
+h3. Migrations
+
+It is now time to build your migrations, starting with the Sessions table.  Take notice of the ip_address and path attributes, which will help you keep track of your users as they login and move throughout your application.
+
+*db/migrate/001_create_sessions.rb*
+
+{% highlight ruby %}
+class CreateSessions < ActiveRecord::Migration
+  def self.up
+    create_table :sessions do |t|
+      t.belongs_to :person
+      t.string :ip_address, :path
+      t.timestamps
+    end
+  end
+
+  def self.down
+    drop_table :sessions
+  end
+end
+{% endhighlight %}
+
+Next, is the People table.  For security purposes, your application will encrypt passwords with a salt unique to each user.
+
+*db/migrate/002_create_people.rb*
+
+{% highlight ruby %}
+class CreatePeople < ActiveRecord::Migration
+  def self.up
+    create_table :people do |t|
+      t.string :name, :salt, :encrypted_password
+      t.timestamps
+    end
+  end
+
+  def self.down
+    drop_table :people
+  end
+end
+{% endhighlight %}
+
+Now that your migrations are programmed, migrate your database with the rake command.
+
+{% highlight bash %}
+$ rake db:migrate          
+(in ~/my_project)
+== 1 CreateSessions: migrating ================================================
+-- create_table(:sessions)
+   -> 0.0503s
+== 1 CreateSessions: migrated (0.0522s) =======================================
+
+== 2 CreatePeople: migrating ==================================================
+-- create_table(:people)
+   -> 0.2419s
+== 2 CreatePeople: migrated (0.2436s) =========================================
+{% endhighlight %}
+
+h3. The Session Model
+
+First, your Session model will authenticate a user by finding a matching name and password in the People table.  If a match is found, it will then associate a Session to an authenticated user and then save itself in the database.  However, if a matching name and password cannot be found, a request to create a new Session should not pass validation.
+
+During updates, a Session should not be authenticated nor validated as it is already associated to a user and doing so would be unnecessary.
+
+*app/models/session.rb*
+
+{% highlight ruby %}
+class Session < ActiveRecord::Base
+  attr_accessor :name, :password, :match
+ 
+  belongs_to :person
+ 
+  before_validation :authenticate_person
+ 
+  validates_presence_of :match, :message => 'for your name and password could not be found',
+                                :unless => :session_has_been_associated?
+ 
+  before_save :associate_session_to_person
+ 
+  private
+ 
+  def authenticate_person
+    self.match = Person.find_by_name_and_password(self.name, self.password) unless session_has_been_associated?
+  end
+ 
+  def associate_session_to_person
+    self.person_id ||= self.match.id
+  end
+ 
+  def session_has_been_associated?
+    self.person_id
+  end
+end
+{% endhighlight %}
+
+h3. The Person Model
+
+To err on the side of security, your Person model will encrypt every password with a 256 bit SHA2 digestion algorithm accompanied with a unique salt.  As users will want to login from many computers, a Person will have many Sessions; all of which must be destroyed if a user unregisters from your application.
+
+Usernames must be simple and unique. Passwords must be 4 to 16 standard ASCII characters and also be confirmed.  Next, scrub out any capital letters from the name before saving and then flush the unencrypted passwords afterwards.  Finally, passwords should only be validated during updates if a new password is given as a parameter.
+
+*app/models/person.rb*
+
+{% highlight ruby %}
+require 'digest/sha2'
+ 
+class Person < ActiveRecord::Base
+  attr_reader :password
+ 
+  ENCRYPT = Digest::SHA256
+ 
+  has_many :sessions, :dependent => :destroy
+ 
+  validates_uniqueness_of :name, :message => "is already in use by another person"
+ 
+  validates_format_of :name, :with => /^([a-z0-9_]{2,16})$/i,
+                      :message => "must be 4 to 16 letters, numbers or underscores and have no spaces"
+ 
+  validates_format_of :password, :with => /^([\x20-\x7E]){4,16}$/,
+                      :message => "must be 4 to 16 characters",
+                      :unless => :password_is_not_being_updated?
+ 
+  validates_confirmation_of :password
+ 
+  before_save :scrub_name
+  after_save :flush_passwords
+ 
+  def self.find_by_name_and_password(name, password)
+    person = self.find_by_name(name)
+    if person and person.encrypted_password == ENCRYPT.hexdigest(password + person.salt)
+      return person
+    end
+  end
+ 
+  def password=(password)
+    @password = password
+    unless password_is_not_being_updated?
+      self.salt = [Array.new(9){rand(256).chr}.join].pack('m').chomp
+      self.encrypted_password = ENCRYPT.hexdigest(password + self.salt)
+    end
+  end
+ 
+  private
+ 
+  def scrub_name
+    self.name.downcase!
+  end
+ 
+  def flush_passwords
+    @password = @password_confirmation = nil
+  end
+ 
+  def password_is_not_being_updated?
+    self.id and self.password.blank?
+  end
+end
+{% endhighlight %}
+
+h3. Routing
+
+In order to take advantage of RESTful routing, you will need to describe your resources in your routes.rb file.  While  you are there, also set your root_url to the index action of your People Controller.  Then, comment out your unrestful paths, as you will not be using them. 
+
+*config/routes.rb*
+
+{% highlight ruby %}
+ActionController::Routing::Routes.draw do |map|
+  map.root :controller => 'people'
+  
+  map.resources :sessions
+  map.resources :people
+ 
+  # map.connect ':controller/:action/:id'
+  # map.connect ':controller/:action/:id.:format'
+end
+{% endhighlight %}
+
+*NOTE: Remember to delete your public/index.html file as you are setting a new root_url path.*
+
+h3. The Application Controller
+
+Maintaining the session is the first duty of your Application Controller.  Once logged in, the user's current session should keep track of their IP address and current path.  In order to easily access a user's account and session information throughout your application, you will also create the @user and @application_session variables.  Note that you are calling it @application_session and not @session.  This differentiation ensures that a user's session information is never overwritten by the Sessions Controller.
+
+To ensure users do not get an error if you delete a Session from the database that they have a cookie for, you should also have a quick check to see if the requested session can even be found.  If not, just delete the user's cookie and redirect them back home.
+
+The final order of business is to ensure users are logged in or out before accessing certain actions.  Making these methods in the Application Controller and calling them with filters is the easiest way to do so.
+
+*app/controllers/application.rb*
+
+{% highlight ruby %}
+# Filters added to this controller apply to all controllers in the application.
+# Likewise, all the methods added will be available for all controllers.
+ 
+class ApplicationController < ActionController::Base
+  helper :all # include all helpers, all the time
+ 
+  before_filter :maintain_session_and_user
+ 
+  # See ActionController::RequestForgeryProtection for details
+  # Uncomment the :secret if you're not using the cookie session store
+  protect_from_forgery # :secret => '3ef815416f775098fe977004015c6193'
+  
+  def ensure_login
+    unless @user
+      flash[:notice] = "Please login to continue"
+      redirect_to(new_session_path)
+    end
+  end
+  
+  def ensure_logout
+    if @user
+      flash[:notice] = "You must logout before you can login or register"
+      redirect_to(root_url)
+    end
+  end
+  
+  private
+  
+  def maintain_session_and_user
+    if session[:id]
+      if @application_session = Session.find_by_id(session[:id])
+        @application_session.update_attributes(:ip_address => request.remote_addr, :path => request.path_info)
+        @user = @application_session.person
+      else
+        session[:id] = nil
+        redirect_to(root_url)
+      end
+    end
+  end
+end
+{% endhighlight %}
+
+h3. The Sessions Controller
+
+Creating and destroying sessions is how users will login and out.  As your models are pretty smart, a simple controller is all that is necessary to accomplish this.
+
+*app/controllers/sessions_controller.rb*
+
+{% highlight ruby %}
+class SessionsController < ApplicationController
+  before_filter :ensure_login, :only => :destroy
+  before_filter :ensure_logout, :only => [:new, :create]
+ 
+  def index
+    redirect_to(new_session_path)
+  end
+ 
+  def new
+    @session = Session.new
+  end
+ 
+  def create
+    @session = Session.new(params[:session])
+    if @session.save
+      session[:id] = @session.id
+      flash[:notice] = "Hello #{@session.person.name}, you are now logged in"
+      redirect_to(root_url)
+    else
+      render(:action => 'new')
+    end
+  end
+ 
+  def destroy
+    Session.destroy(@application_session)
+    session[:id] = @user = nil
+    flash[:notice] = "You are now logged out"
+    redirect_to(root_url)
+  end
+end
+{% endhighlight %}
+
+h3. The People Controller
+
+Continuing with your pattern of simple controllers is the People controller.  With its seven actions, user's will be able to register, view other user's, edit their account and unregister.
+
+*app/controllers/people_controller.rb*
+
+{% highlight ruby %}
+class PeopleController < ApplicationController
+  before_filter :ensure_login, :only => [:edit, :update, :destroy]
+  before_filter :ensure_logout, :only => [:new, :create]
+ 
+  def index
+    @people = Person.find(:all)
+  end
+ 
+  def show
+    @person = Person.find(params[:id])
+  end
+ 
+  def new
+    @person = Person.new
+  end
+ 
+  def create
+    @person = Person.new(params[:person])
+    if @person.save
+      @session = @person.sessions.create
+      session[:id] = @session.id
+      flash[:notice] = "Welcome #{@person.name}, you are now registered"
+      redirect_to(root_url)
+    else
+      render(:action => 'new')
+    end
+  end
+ 
+  def edit
+    @person = Person.find(@user)
+  end
+ 
+  def update
+    @person = Person.find(@user)
+    if @person.update_attributes(params[:person])
+      flash[:notice] = "Your account has been updated"
+      redirect_to(root_url)
+    else
+      render(:action => 'edit')
+    end
+  end
+ 
+  def destroy
+    Person.destroy(@user)
+    session[:id] = @user = nil
+    flash[:notice] = "You are now unregistered"
+    redirect_to(root_url)
+  end
+end
+{% endhighlight %}
+
+h3. Views
+
+The final part is building the views, all of which are pretty simple.
+
+*app/views/layouts/application.html.erb*
+
+{% highlight rhtml %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html>
+<head>
+  <title>Simple and RESTful Authentication</title>
+</head>
+
+<body>
+  <%= link_to "Home", root_url %> -
+  <% if @user %>
+    <%= link_to "Edit Account", edit_person_path('account') %> -
+    <%= link_to "Logout", @application_session, :method => :delete %>
+  <% else %>
+    <%= link_to "Login", new_session_path %> -
+    <%= link_to "Register", new_person_path %>
+  <% end %>
+  
+  <%= "- Message: #{flash[:notice]}" if flash[:notice] %>
+  
+  <hr />
+
+  <h1>
+  <% if @user %>
+    <%= "User: #{@user.name}" %><br />
+    <%= "IP Address: #{@application_session.ip_address}" %><br />
+    <%= "Path: #{@application_session.path}" %>
+  <% end %>
+  </h1>
+  
+  <%= yield %>
+</body>
+</html>
+{% endhighlight %}
+
+*app/views/sessions/new.html.erb*
+
+{% highlight rhtml %}
+<%= error_messages_for :session %>
+
+<fieldset>
+  <legend>Login</legend>
+
+  <% form_for @session do |f| %>
+  
+    <label for="session_name">Name</label><br />
+    <%= f.text_field :name %><br />
+  
+    <label for="session_password">Password</label><br />
+    <%= f.password_field :password %><br />
+  
+    <%= submit_tag "login" %>
+  
+  <% end %>
+
+</fieldset>
+{% endhighlight %}
+
+*app/views/people/index.html.erb*
+
+{% highlight rhtml %}
+<% for person in @people %>
+
+  <%= link_to person.name, person %>
+
+<% end %>
+{% endhighlight %}
+
+*app/views/people/show.html.erb*
+
+{% highlight rhtml %}
+Name: <%= @person.name %><br />
+Created: <%= @person.created_at.strftime("%B %d, %Y at %l:%M %p") %><br />
+Updated: <%= @person.updated_at.strftime("%B %d, %Y at %l:%M %p") %><br />
+<br />
+Currently logged in on <%= @person.sessions.size %> computer(s).
+{% endhighlight %}
+
+*app/views/people/_form.html.erb*
+
+{% highlight rhtml %}
+<% form_for @person do |f| %>
+  
+  <label for="person_name">Name:</label><br />
+  <%= f.text_field :name %><br />
+  
+  <label for="person_password">Password:</label><br />
+  <%= f.password_field :password %><br />
+  
+  <label for="person_password_confirmation">Password Confirmation:</label><br />
+  <%= f.password_field :password_confirmation %><br />
+  
+  <%= submit_tag "Submit" %>
+
+<% end %>
+{% endhighlight %}
+
+*app/views/people/new.html.erb*
+
+{% highlight rhtml %}
+<%= error_messages_for :person %>
+
+<fieldset>
+  <legend>Register</legend>
+
+  <%= render :partial => 'form' %>
+  
+</fieldset>
+{% endhighlight %}
+
+*app/views/people/edit.html.erb*
+
+{% highlight rhtml %}
+<%= error_messages_for :person %>
+
+<fieldset>
+  <legend>Edit Account</legend>
+  
+  <%= render :partial => 'form' %>
+  
+</fieldset>
+
+<br />
+
+<%= button_to "Unregister", @person, :method => :delete, :confirm => "Are you sure?" %>
+{% endhighlight %}
+
+h3. Conclusion
+
+That is all there is to it.  You should now have a very good starting point to further build onto in regards to making your own RESTful authentication system.  As you saw, smart models only needed basic CRUD actions, which kept your controllers clean and simple.  As such, your code base remains very organized and flexible, priming your application for more advanced features and easier maintenance.
+
+h3. Also See
+
+"Simple and Restful Account Recovery for Ruby on Rails":/2008/03/24/simple-and-restful-account-recovery-for-ruby-on-rails
