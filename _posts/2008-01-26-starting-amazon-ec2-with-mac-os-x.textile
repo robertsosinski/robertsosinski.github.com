@@ -1,0 +1,199 @@
+---
+layout: default
+title: Starting Amazon EC2 with Mac OS X
+category: Systems
+---
+
+Amazon EC2 (Elastic Cloud Compute) is making a lot of buzz in the tech industry, and rightfully so.  With EC2, you can ramp up to a massive server farm in a matter of minutes, while scaling back down to a single server when things calm down. The benefits are obvious, as you only pay for what you need and you have access to more computing power right when you need it.
+
+EC2 works on the idea of server instances.  You start with building one instance, which only costs 10 cents per hour of operation.  An instance acts just like a dedicated machine, with full root access and the ability to install any software you choose.  Each instance also comes with some pretty competitive system specs including:
+
+* 1.7 Ghz Xeon CPU
+* 1.75 GB of RAM
+* 160 GB of local storage
+* 250 MB/s network interface
+
+If your first instance gets some heavy traffic, EC2 can build another one automatically for another 10 cents an hour.  Turnkey infrastructure has never been better.
+
+h3. Getting Started
+
+First off, you have to set up your computer so you can connect to and administer your Amazon EC2 account.
+
+*1.* Log into your Amazon Web Services account at "http://aws.amazon.com":http://aws.amazon.com and sign up for EC2.
+
+*2.* Once signed up, hover over the yellow "Your Web Services Account" button.  Here, you should select the "AWS Access Identifiers" link.
+
+*3*. Login, if prompted.
+
+
+*4.* Select the "X.509 certificates" link.
+
+*5.* Click on the "Create New" link. Amazon will ask you if you are sure, say yes.  Doing so will generate two files.
+* A PEM encoded X.509 certificate named something like  cert-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.pem
+* A PEM encoded RSA private key named something like  pk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.pem
+
+*6.* Download both of these files.
+
+bq.. *What is PEM?*
+
+PEM (Privacy Enhanced Mail) is a protocol originally developed to secure email. Although rarely deployed for its indented purpose, it's encoding mechanism for generating certificates is used for quite a few web services including Amazon EC2, PayPal Web Payments Pro and SSH Key Pairs.
+
+Learn more about PEM by reading "this":http://en.wikipedia.org/wiki/Privacy-enhanced_Electronic_Mail and "this":http://en.wikipedia.org/wiki/Base64#Privacy-Enhanced_Mail_.28PEM.29.
+
+p. *7.* Download the Amazon EC2 Command-Line Tools from "here":http://developer.amazonwebservices.com/connect/entry.jspa?externalID=351&categoryID=88.
+
+*8.* Open the Terminal, go to your home directory, make a new ~/.ec2 directory and open it in the Finder.
+
+{% highlight bash %}
+$ cd
+$ mkdir .ec2
+$ cd .ec2
+$ open .
+{% endhighlight %}
+
+*9.* Copy the certificate and private key from your download directory into your ~/.ec2 directory.
+
+*10.* Unzip the Amazon EC2 Command-Line Tools, look in the new directory and move both the bin and lib directory into your ~/.ec2 directory.   This directory should now have the following:
+
+* The cert-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.pem file
+* The pk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.pem file
+* The bin directory
+* The lib directory
+
+*11.* Now, you need to set a few environmental variables.  To help yourself out in the future, you will be placing everything necessary in your ~/.bash_profile file.  What this will do is automatically setup the Amazon EC2 Command-Line Tools every time you start a Terminal session.  Just open ~/.bash_profile in your text editor and add the following to the end of it:
+
+{% highlight bash %}
+# Setup Amazon EC2 Command-Line Tools
+export EC2_HOME=~/.ec2
+export PATH=$PATH:$EC2_HOME/bin
+export EC2_PRIVATE_KEY=`ls $EC2_HOME/pk-*.pem`
+export EC2_CERT=`ls $EC2_HOME/cert-*.pem`
+export JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Home/
+{% endhighlight %}
+
+*12.* As you made some changes to your ~/.bash_profile file, you will need to reload it for everything to take effect.  Run this:
+
+{% highlight bash %}
+$ source ~/.bash_profile
+{% endhighlight %}
+
+h3. Creating and Connecting to a Server Instance
+
+Now that your computer is set up to work with EC2, it is time to make your server instance.
+
+*1.* Type this into the Terminal.
+
+{% highlight bash %}
+$ ec2-describe-images -o amazon
+{% endhighlight %}
+
+bq.. *What does the -o option do?*
+
+The -o option stands for owner.  In this example, you are asking EC2 to describe the images that belong Amazon.  To see every image available, give the -a option instead.
+
+p. *2.* After a short wait, you will be given a list of available images which should look something like this.
+
+{% highlight bash %}
+IMAGE   ami-20b65349    ec2-public-images/fedora-core4-base.manifest.xml         amazon  available       public
+IMAGE   ami-22b6534b    ec2-public-images/fedora-core4-mysql.manifest.xml        amazon  available       public
+IMAGE   ami-23b6534a    ec2-public-images/fedora-core4-apache.manifest.xml       amazon  available       public
+IMAGE   ami-25b6534c    ec2-public-images/fedora-core4-apache-mysql.manifest.xml amazon  available       public
+IMAGE   ami-26b6534f    ec2-public-images/developer-image.manifest.xml           amazon  available       public
+IMAGE   ami-2bb65342    ec2-public-images/getting-started.manifest.xml           amazon  available       public
+IMAGE   ami-36ff1a5f    ec2-public-images/fedora-core6-base-x86_64.manifest.xml  amazon  available       public
+IMAGE   ami-bd9d78d4    ec2-public-images/demo-paid-AMI.manifest.xml             amazon  available       public  A79EC0DB
+{% endhighlight %}
+
+*3.* Lets create something simple for now, a Fedora Core 4 machine with Apache. To do this, we need to generate a keypair.  This keypair will supply the credentials we need to SSH (Secure Shell) into our server instance.  To make a new keypair named ec2-keypair, type the following:
+
+{% highlight bash %}
+$ ec2-add-keypair ec2-keypair
+{% endhighlight %}
+
+*4.* This will create a RSA Private Key and then output it to the screen. You are going to copy this entire key, including the @-----BEGIN RSA PRIVATE KEY-----@ and @-----END RSA PRIVATE KEY-----@ lines to the clipboard.  Now, go into your ~/.ec2 directory, make a new file called ec2-keypair, open it in your text editor, paste the entire key and save it.
+
+*5.* Next, it is important to change the permissions of your keypair file, or else EC2 will not let you connect to it via SSH. To do this, just type the following in your ~/.ec2 directory:
+
+{% highlight bash %}
+$ chmod 600 ec2-keypair
+{% endhighlight %}
+
+*6.* Time to create your new machine.  Ensure you are in your ~/.ec2 directory and type the following, substituting "ami-23b6534a" with the id of the image you wish to create.
+
+*NOTE: It is important to understand that once you tell EC2 to start creating your server instance, you will start paying 10 cents every hour until you terminate it.*
+
+{% highlight bash %}
+$ ec2-run-instances ami-23b6534a -k ec2-keypair
+RESERVATION     r-xxxxxxxx      xxxxxxxxxxxx    default
+INSTANCE        i-xxxxxxxx      ami-23b6534a                    pending ec2-keypair     0               m1.small        2008-01-25T19:38:04+0000
+{% endhighlight %}
+
+*7.* It may take a bit for EC2 to start your new machine, but you can always check its status by typing:
+
+{% highlight bash %}
+$ ec2-describe-instances
+RESERVATION     r-xxxxxxxx      xxxxxxxxxxxx    default
+INSTANCE        i-xxxxxxxx      ami-23b6534a    ec2-xx-xxx-xx-xx.compute-1.amazonaws.com        domU-xx-xx-xx-xx-xx-E2.compute-1.internal    running ec2-keypair     0               m1.small        2008-01-25T19:38:04+0000
+{% endhighlight %}
+
+*8.* Great, your instance is up and running.  Take note of your server's web address (ec2-xx-xxx-xx-xx.compute-1.amazonaws.com) and ID (i-xxxxxxxx) as you will need both of these later in this tutorial.  If you forget them, you can always type the ec2-describe-instances command again.  Now, lets prep our server by enabling port 22 for SSH access and port 80 so Apache can serve web pages.
+
+{% highlight bash %}
+$ ec2-authorize default -p 22
+PERMISSION     default  ALLOWS  tcp     22      22      FROM    CIDR   0.0.0.0/0
+
+$ ec2-authorize default -p 80
+PERMISSION     default  ALLOWS  tcp     80      80      FROM    CIDR   0.0.0.0/0
+{% endhighlight %}
+
+*9.* This is the moment you have been waiting for, connecting to your new machine.  Open a new web browser window and type in your instance's web address. You should now see an Apache welcome.
+
+*10.* Fantastic, your instance is serving the Apache test page.  Now, lets SSH into the machine and check it out.  Ensure you are in your ~/.ec2 directory as you will need your ec2-keypair file.
+
+{% highlight bash %}
+$ ssh -i ec2-keypair root@ec2-xx-xxx-xx-xx.compute-1.amazonaws.com
+{% endhighlight %}
+
+*11.* SSH will ask you if you are sure you want to connect.  Just enter yes and you should be connected to your server instance.
+
+{% highlight bash %}
+         __|  __|_  )  Rev: 2
+         _|  (     /
+        ___|\___|___|
+
+ Welcome to an EC2 Public Image
+                       :-)
+
+    Apache2
+
+    __ c __ /etc/ec2/release-notes.txt
+
+[root@domU-xx-xx-xx-xx-xx-E2 ~]#
+{% endhighlight %}
+
+*12.* Enjoy.
+
+h3. Terminating Your Server Instance
+
+Keep in mind that you are still on the meter.  Because of this, you should shut down your server instance if you do not plan on using it.
+
+*1.* Enter the terminate command with your server's instance ID.
+
+{% highlight bash %}
+$ ec2-terminate-instances i-xxxxxxxx
+INSTANCE        i-xxxxxxxx      running shutting-down
+{% endhighlight %}
+
+*2.* Take a look to see if everything is terminated.
+
+{% highlight bash %}
+$ ec2-describe-instances
+RESERVATION     r-xxxxxxxx      xxxxxxxxxxxx    default
+INSTANCE        i-xxxxxxxx      ami-23b6534a                    terminated      ec2-keypair     0               m1.small    2008-01-25T19:38:04+0000
+{% endhighlight %}
+
+*3.* Done and done.
+
+h3. Conclusion
+
+I hope you now feel comfortable working with Amazon's EC2 service after reading this tutorial.  Now, take advantage of this really powerful technology and build something great!

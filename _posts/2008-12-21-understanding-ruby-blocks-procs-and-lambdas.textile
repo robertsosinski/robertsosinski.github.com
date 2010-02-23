@@ -128,9 +128,11 @@ puts array_2.inspect
 # => [4, 9, 16, 25]
 {% endhighlight %}
 
-bq. *Why lowercase block and uppercase Proc?* I always write Proc as uppercase as it is a proper class within Ruby.  However, blocks do not have a class of their own (they are just Procs after all) and are just a type of syntax within Ruby.  As such, I write block in lowercase.  Later in this tutorial, you will see me also writing lambda in lowercase.  I do so for the same reason.
+bq.. *Why lowercase block and uppercase Proc?*
 
-Notice how we do not prepend an ampersand to the code attribute in our @iterate!@ method. This is because passing Procs is no different then passing any other data type, as noticed in line 18 and 19.  As Procs are treated just like any other object, we can start having some fun and push Ruby's interpreter to do some interesting things.  Give this a try:
+I always write Proc as uppercase as it is a proper class within Ruby.  However, blocks do not have a class of their own (they are just Procs after all) and are just a type of syntax within Ruby.  As such, I write block in lowercase.  Later in this tutorial, you will see me also writing lambda in lowercase.  I do so for the same reason.
+
+p. Notice how we do not prepend an ampersand to the code attribute in our @iterate!@ method. This is because passing Procs is no different then passing any other data type, as noticed in line 18 and 19.  As Procs are treated just like any other object, we can start having some fun and push Ruby's interpreter to do some interesting things.  Give this a try:
 
 {% highlight ruby linenos %}
 class Array

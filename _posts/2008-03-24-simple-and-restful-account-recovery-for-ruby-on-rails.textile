@@ -20,13 +20,15 @@ To get started, require the OpenSSL and SHA2 digest libraries.  Next, open a new
 
 Next, make a private start module method that will prep AES in in the same way for encryption and decryption and place it at the end of your module.  Specifically, you will be using 256 bit AES in ECB (Electronic Code Book) mode.  Although there are more secure ways to run AES, ECB is more then sufficient for small strings and very easy to setup.  Also, run your key through an 256 bit SHA2 digest to ensure it is 256 bits in length.
 
-bq. *What are block cipher modes?* ECB is one of many different ways to run AES, however another common (and more secure) way is CBC (Cipher Block Chaining).  AES in ECB mode will first break your plain text into a group of 128 bit blocks, encrypt each block and concatenate them in order to make a ciphered message.  This is good for small strings (especially strings that fit within one block), but not so much when sending larger messages.
+bq.. *What are block cipher modes?*
 
-bq. AES in CBC mode will exclusively-or (X-OR) each plain text block with the previous cipher text block before encryption.  Doing so makes each every block of cipher text rely on the previous, and as such, makes cryptanalysis much more difficult.  However, starting the process requires a block of text to X-OR the initial block with.  This initial block is called an initialization vector (IV) and should be set and safeguarded in similar fashion as your secret key.
+ECB is one of many different ways to run AES, however another common (and more secure) way is CBC (Cipher Block Chaining).  AES in ECB mode will first break your plain text into a group of 128 bit blocks, encrypt each block and concatenate them in order to make a ciphered message.  This is good for small strings (especially strings that fit within one block), but not so much when sending larger messages.
 
-bq. Learn more about AES "here":http://en.wikipedia.org/wiki/Advanced_Encryption_Standard and block cipher modes "here":http://en.wikipedia.org/wiki/Block_cipher_modes_of_operation.
+AES in CBC mode will exclusively-or (X-OR) each plain text block with the previous cipher text block before encryption.  Doing so makes each every block of cipher text rely on the previous, and as such, makes cryptanalysis much more difficult.  However, starting the process requires a block of text to X-OR the initial block with.  This initial block is called an initialization vector (IV) and should be set and safeguarded in similar fashion as your secret key.
 
-Now that your crypto is setup, build an encryption module method.  The workings are simple.  First, start your crypto in encryption mode.  Next, pile your plain text string into the your crypto's update method and finish the cipher text output.  The final step is to encode the string in hexadecimal, so it can be sent in a url.
+Learn more about AES "here":http://en.wikipedia.org/wiki/Advanced_Encryption_Standard and block cipher modes "here":http://en.wikipedia.org/wiki/Block_cipher_modes_of_operation.
+
+p. Now that your crypto is setup, build an encryption module method.  The workings are simple.  First, start your crypto in encryption mode.  Next, pile your plain text string into the your crypto's update method and finish the cipher text output.  The final step is to encode the string in hexadecimal, so it can be sent in a url.
 
 The reverse is simple too, just convert the hexadecimal string back into characters and decrypt it.  Save this file in your project's /lib directory and you are all set.
 

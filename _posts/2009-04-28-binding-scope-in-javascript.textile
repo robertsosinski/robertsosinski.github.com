@@ -22,9 +22,11 @@ action("hello");
 // hello window
 {% endhighlight %}
 
-bq. *What is Firebug?* "Firebug":http://getfirebug.com/ is a Firefox plugin that offers a wealth tools for JavaScript developers.  The specific tool we will be using throughout this tutorial is the JavaScript console, so we can get instant feedback on what our functions are up to.
+bq.. *What is Firebug?*
 
-In the above example, we assigned a variable to the global @window@ object called @name@.  We then defined a function in the window scope that will log a string to the console and then we gave it a run.  The line of most interest is number 4, where we used the @this@ variable.  As our function is within the global window scope, @this@ resolves to the window object, and as such, we can get to our @name@ variable and concatenate it to our @greeting@ string.
+"Firebug":http://getfirebug.com/ is a Firefox plugin that offers a wealth tools for JavaScript developers.  The specific tool we will be using throughout this tutorial is the JavaScript console, so we can get instant feedback on what our functions are up to.
+
+p. In the above example, we assigned a variable to the global @window@ object called @name@.  We then defined a function in the window scope that will log a string to the console and then we gave it a run.  The line of most interest is number 4, where we used the @this@ variable.  As our function is within the global window scope, @this@ resolves to the window object, and as such, we can get to our @name@ variable and concatenate it to our @greeting@ string.
 
 This pattern works well until we have a lot of functions and variables floating around our program.  Once this happens, we can employ objects in JavaScript to act as containers.
 
