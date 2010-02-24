@@ -1,24 +1,18 @@
 ---
 layout: default
-title: Programming Tutorials
 ---
 
-{% for post in site.posts %}
-  <h3><a class="title" href="{{ post.url }}">{{ post.title }}</a></h3>
-  {{ post.blurb }}
-  <em>Posted on <span class="date">{{ post.date | date_to_long_string }}</span> in <a class="category" href="#{{post.category | downcase | replace:" ","_" }}">{{ post.category }}</a></em>
-{% endfor %}
+<h2>Tutorials</h2>
 
-<hr />
+<div id="tutorials">
+  {% for post in site.posts %}
+    <h3><a class="title" href="{{ post.url }}">{{ post.title }}</a></h3>
+    {{ post.blurb }}
+    <em>Posted on <span class="date">{{ post.date | date_to_long_string }}</span> in <a class="category" href="#{{post.category | downcase | replace:" ","_" }}">{{ post.category }}</a></em>
+  {% endfor %}
+</div>
 
-{% for category in site.categories %}
-  <div id="{{ category[0] | downcase | replace:" ","_" }}">
-    <h3>{{ category[0] }}</h3>
-  
-    <ul>
-      {% for post in category[1] %}
-        <li><a href="{{ post.url }}">{{ post.title }}</a></li>
-      {% endfor %}
-    </ul>
-  </div>
-{% endfor %}
+<h2>Projects</h2>
+
+<div id="projects">
+</div>
