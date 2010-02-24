@@ -84,7 +84,7 @@ puts array.inspect
 # => [1, 4, 9, 16]
 {% endhighlight %}
 
-Looks very similar to our previous example, however there are two differences.  First on line 4, we are passing an ampersand argument called code.  This argument is, conveniently enough, our block.  The second is on line 6, where instead of using yield, we send @call@ to our block of code.  The result is exactly the same.  However, if this is so, why even have this difference in syntax?  Well, it lets us learn a bit more about what blocks really are.  Take a look:
+Looks very similar to our previous example, however there are two differences.  First on line 2, we are passing an ampersand argument called code.  This argument is, conveniently enough, our block.  The second is on line 4, where instead of using yield, we send @call@ to our block of code.  The result is exactly the same.  However, if this is so, why even have this difference in syntax?  Well, it lets us learn a bit more about what blocks really are.  Take a look:
 
 {% highlight ruby linenos %}
 def what_am_i(&block)
@@ -217,7 +217,7 @@ arguments(Proc.new { |a, b, c| puts "Give me a #{a} and a #{b} and a #{c.class}"
 arguments(lambda { |a, b, c| puts "Give me a #{a} and a #{b} and a #{c.class}" })
 
 # => Give me a 1 and a 2 and a NilClass
-# *.rb:10: ArgumentError: wrong number of arguments (2 for 3) (ArgumentError)
+# *.rb:8: ArgumentError: wrong number of arguments (2 for 3) (ArgumentError)
 {% endhighlight %}
 
 We see with the Proc example, extra variables are set to @nil@.  However with lambdas, Ruby throws an error instead.
@@ -257,7 +257,7 @@ end
 puts generic_return(Proc.new { return "Proc.new" })
 puts generic_return(lambda { return "lambda" })
 
-# => *.rb:8: unexpected return (LocalJumpError)
+# => *.rb:6: unexpected return (LocalJumpError)
 # => generic_return method finished
 {% endhighlight %}
 
@@ -279,7 +279,7 @@ puts generic_return(Proc.new { |x, y| x + 2; y + 2 })
 puts generic_return(Proc.new { |x, y| [x + 2, y + 2] })
 
 # => Give me a 3 and a 4
-# => *.rb:11: unexpected return (LocalJumpError)
+# => *.rb:9: unexpected return (LocalJumpError)
 # => Give me a 4 and a 
 # => Give me a 3 and a 4
 {% endhighlight %}
@@ -326,16 +326,8 @@ puts method(:square).class
 # => Method
 {% endhighlight %}
 
-Just as you guessed, @square@ is not a Proc, but a Method.  The neat thing is that this Method object will act just like a lambda, because the concept is the same.  This method however, is a named method (called @square@) while lambdas are anonymous methods.  That being the case, are lambdas of type Method too?
-
-{% highlight ruby linenos %}
-puts lambda {}.class
-
-# => Proc
-{% endhighlight %}
-
-Argh, a lambda is a Proc.  Why is this?  Honestly, I don't know and think that lambdas (which act just like methods) should be Method objects.  Maybe this will change in a later version of Ruby.
+Just as you guessed, @square@ is not a Proc, but a Method.  The neat thing is that this Method object will act just like a lambda, because the concept is the same.  This method however, is a named method (called @square@) while lambdas are anonymous methods.
 
 h3. Conclusion
 
-So to recap, we went through Ruby's four closure types, blocks, Procs, lambdas and Methods.  We also know that blocks and Procs act like drop-in code snippets, while lambdas and Methods act just like methods.  Finally, through a slew of code examples, you were able to see when to use which and how to use each effectively.  Now, you should be able to start using this expressive and interesting feature of Ruby in your own code, and start offering flexible and powerful methods to other developers you work with.  All while looking savvy in the process.
+So to recap, we went through Ruby's four closure types, blocks, Procs, lambdas and Methods.  We also know that blocks and Procs act like drop-in code snippets, while lambdas and Methods act just like methods.  Finally, through a slew of code examples, you were able to see when to use which and how to use each effectively.  Now, you should be able to start using this expressive and interesting feature of Ruby in your own code, and start offering flexible and powerful methods to other developers you work with.

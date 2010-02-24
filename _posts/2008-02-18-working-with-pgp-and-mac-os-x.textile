@@ -491,11 +491,9 @@ user: "First and Last Name (Mac GPG Tutorial) <name@domain.com>"
 1024-bit DSA key, ID A7327C0E, created 2008-02-13
 {% endhighlight %}
 
-
 bq.. *DSA for authentication and Elgamel for encryption*
 
 When you generated your key pair, you noticed that you actually created two keys, one 1024 bit DSA key and one 2048 bit Elgamel sub key.  As you are encrypting and signing your message, GPG will use your DSA private key to sign the message and your Elgamel public sub key to encrypt it. When you decrypt this message, the process is reversed by using your Elgamel private sub key for decryption and DSA public key for authentication.  Currently, all PGP implementations which adhere to the OpenPGP standard (like GPG) use these two cryptographic algorithms.
-
 
 p. *4.* After a short wait, you should now have a cipher.asc file in your crypto directory.  Take a look.
 

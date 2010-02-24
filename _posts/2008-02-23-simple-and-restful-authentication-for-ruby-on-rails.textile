@@ -14,7 +14,7 @@ REST (Representational State Transfer) is a programming concept in which you bui
 
 A good frame of mind for building RESTful web applications is to spend most of your time thinking about your models.  Smart models should know how to find, create, update and ultimately destroy themselves and their related objects whenever necessary.  Once you have smart models, controllers can focus on taking parameters from your users and yielding appropriate responses in the proper format, be it HTML, Javascript, XML or RSS.
 
-At the end of the day, all of this will make for more organized and flexible code base.
+At the end of the day, all of this will make for a more organized and flexible code base.
 
 h3. Starting Off
 
@@ -302,7 +302,7 @@ end
 
 h3. The People Controller
 
-Continuing with your pattern of simple controllers is the People controller.  With its seven actions, user's will be able to register, view other user's, edit their account and unregister.
+Continuing with your pattern of simple controllers is the People controller.  With its seven actions, users will be able to register, view other users, edit their account and unregister.
 
 *app/controllers/people_controller.rb*
 

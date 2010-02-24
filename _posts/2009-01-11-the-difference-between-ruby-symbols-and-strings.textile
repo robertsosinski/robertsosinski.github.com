@@ -10,7 +10,7 @@ h3. Symbols are Strings, Sort Of
 
 The truth of the matter is that Symbols are Strings, just with an important difference, Symbols are immutable.  Mutable objects can be changed after assignment while immutable objects can only be overwritten.  Ruby is quite unique in offering mutable Strings, which adds greatly to its expressiveness. However mutable Strings can have their share of issues in terms of creating unexpected results and reduced performance.  It is for this reason Ruby also offers programmers the choice of Symbols.
 
-So, how flexible are Symbols in terms of representing data?  The answer is just as flexible as Strings.  Lets take a look at some valid Symbols.
+So, how flexible are Symbols in terms of representing data?  The answer is just as flexible as Strings.  Lets take a look at some valid Strings and their Symbol equivalents.
 
 {% highlight ruby linenos %}
 "hello"
@@ -74,7 +74,7 @@ In this example, a script silently watches the world for aggression and danger. 
 
 h3. Frozen Strings
 
-There are two ways to handle the mutability issue above.  The first is to freeze the string and thus making it immutable.  Once a String is frozen it cannot be changed.
+There are two ways to handle the mutability issue above.  The first is to freeze the String and thus making it immutable.  Once a String is frozen it cannot be changed.
 
 {% highlight ruby linenos %}
 example = "hello world"
@@ -86,7 +86,7 @@ example.freeze
 example.downcase!
 
 # => "HELLO WORLD"
-# => *.rb:9:in `downcase!': can't modify frozen string (TypeError)
+# => *.rb:7:in `downcase!': can't modify frozen string (TypeError)
 {% endhighlight %}
 
 The second way would be to make your program use Symbols.  But if frozen Strings work just as Symbols, we are back to wondering the true value of Symbols and why they should be used.
@@ -135,7 +135,7 @@ puts :"hello world".object_id
 # => 239518
 {% endhighlight %}
 
-This time, every Symbol shares the same object id, and as such the same space on the heap. To further increase performance, Ruby will not mark Symbols for destruction, allowing you to reuse them again and again. As Symbols stay in memory throughout the programs operation, we can quickly snag them from memory instead of instantiating a new copy every time. In fact, these symbols are not only stored in memory, they are also keep track of via an optimized Symbols dictionary. You can see it by running the next example.
+This time, every Symbol shares the same object id, and as such the same space on the heap. To further increase performance, Ruby will not mark Symbols for destruction, allowing you to reuse them again and again. As Symbols stay in memory throughout the programs operation, we can quickly snag them from memory instead of instantiating a new copy every time. In fact, Symbols are not only stored in memory, they are also keep track of via an optimized Symbols dictionary. You can see it by running the next example.
 
 {% highlight ruby linenos %}
 puts Symbol.all_symbols.inspect
@@ -145,7 +145,7 @@ puts Symbol.all_symbols.inspect
 
 The @all_symbols@ class method will return an Array of every Symbol currently used in your program.  Every time you create a new Symbol, it is also put here. When you use a Symbol, Ruby will check the dictionary first, and if available it will be fetched and used.  If the Symbol cannot be found in the dictionary, only then will the interpreter instantiate a new Symbol and put it in the heap. We can easily see this process by dropping into IRB and typing the following:
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 >> Symbol.all_symbols.collect{|sym| sym.to_s}.include?("new_symbol")
 => false
 >> :new_symbol
@@ -190,7 +190,7 @@ String: 2.24
 Symbol: 1.33
 {% endhighlight %}
 
-On average, we are getting a 40% increase solely by using Symbols.  However, Symbols are not just faster then Strings in how they are stored and used, but also in how they are compared. As Symbols of the same text share the same object on the heap, testing for equality is as quick as comparing the object id's.  Testing equality for Strings however, is a bit more computationally expensive. As every String has its own place in memory, the interpreter has to compare the actual data making up the String. A good example to visualize this type of check would be the following:
+On average, we are getting a 40% increase solely by using Symbols.  However, Symbols are not just faster then Strings in how they are stored and used, but also in how they are compared. As Symbols of the same text share the same space on the heap, testing for equality is as quick as comparing the object id's.  Testing equality for Strings however, is a bit more computationally expensive. As every String has its own place in memory, the interpreter has to compare the actual data making up the String. A good example to visualize this type of check would be the following:
 
 {% highlight ruby linenos %}
 a = "test".split(//)

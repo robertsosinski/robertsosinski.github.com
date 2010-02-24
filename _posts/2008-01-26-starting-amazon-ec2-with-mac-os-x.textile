@@ -133,7 +133,7 @@ INSTANCE        i-xxxxxxxx      ami-23b6534a                    pending ec2-keyp
 {% highlight bash %}
 $ ec2-describe-instances
 RESERVATION     r-xxxxxxxx      xxxxxxxxxxxx    default
-INSTANCE        i-xxxxxxxx      ami-23b6534a    ec2-xx-xxx-xx-xx.compute-1.amazonaws.com        domU-xx-xx-xx-xx-xx-E2.compute-1.internal    running ec2-keypair     0               m1.small        2008-01-25T19:38:04+0000
+INSTANCE        i-xxxxxxxx      ami-23b6534a    ec2-xx-xxx-xx-xx.compute-1.amazonaws.com        domU-xx-xx-xx-xx-xx-E2.compute-1.internal    running ec2-keypair
 {% endhighlight %}
 
 *8.* Great, your instance is up and running.  Take note of your server's web address (ec2-xx-xxx-xx-xx.compute-1.amazonaws.com) and ID (i-xxxxxxxx) as you will need both of these later in this tutorial.  If you forget them, you can always type the ec2-describe-instances command again.  Now, lets prep our server by enabling port 22 for SSH access and port 80 so Apache can serve web pages.
@@ -146,7 +146,7 @@ $ ec2-authorize default -p 80
 PERMISSION     default  ALLOWS  tcp     80      80      FROM    CIDR   0.0.0.0/0
 {% endhighlight %}
 
-*9.* This is the moment you have been waiting for, connecting to your new machine.  Open a new web browser window and type in your instance's web address. You should now see an Apache welcome.
+*9.* This is the moment you have been waiting for, connecting to your new machine.  Open a new web browser window and type in your instance's web address. You should now see an Apache welcome page.
 
 *10.* Fantastic, your instance is serving the Apache test page.  Now, lets SSH into the machine and check it out.  Ensure you are in your ~/.ec2 directory as you will need your ec2-keypair file.
 

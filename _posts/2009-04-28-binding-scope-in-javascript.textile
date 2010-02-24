@@ -72,7 +72,7 @@ object.action("hello");
 // hello window
 {% endhighlight %}
 
-Hmm, our @nestedAction@ function is indeed contained within @object@, however @this@ on line 10 is pointing to @window@.  This is due to how we are executing the @nestedAction@ function.  In JavaScript, scope is resolved during a functions execution.  Although our @action@ function is defined and executed within @object@, we are telling JavaScript to run it within the @window@ scope.  As such, the @nestedAction@ function is actually executing globally even though it is defined locally within the @action@ function.
+Hmm, our @nestedAction@ function is indeed contained within @object@, however @this@ on line 8 is pointing to @window@.  This is due to how we are executing the @nestedAction@ function.  In JavaScript, scope is resolved during a functions execution.  Although our @action@ function is defined and executed within @object@, we are telling JavaScript to run it within the @window@ scope.  As such, the @nestedAction@ function is actually executing globally even though it is defined locally within the @action@ function.
 
 In short, Once we executed a function nested within a function, JavaScript lost our scope and is defaulting to the best thing it can get, @window@.  To get our scope back, JavaScript offers us two useful functions, @call@ and @apply@.
 
@@ -126,7 +126,7 @@ eve.talk.apply(window, ["hi"]);
 // hi, my name is the window
 {% endhighlight %}
 
-In this example, the nefarious Eve is able to impersonate both Alice and the window object by passing @apply@ to her @talk@ function.  Between the this and the previous example, we can definitely see how @call@ and @apply@ can be used to help JavaScript keep hold of scope during operation.  However, we run into a serious issue with this technique.  As we are still determining scope at execution time, we must execute the function to have our scope be resolved.  This become problematic if we want to pass functions around to be executed later, scope intact.
+In this example, the nefarious Eve is able to impersonate both Alice and the window object by passing @apply@ to her @talk@ function.  Between the this and the previous example, we can definitely see how @call@ and @apply@ can be used to help JavaScript keep hold of scope during operation.  However, we run into a serious issue with this technique.  As we are still determining scope at execution time, we must execute the function before their scope is resolved.  This becomes problematic if we want to pass functions around to be executed later, scope intact.
 
 h3. Binding Scope
 
@@ -159,9 +159,9 @@ eve.talk("hello");
 The above example uses the same technique as Prototype, albeit syntactically different.  What we are doing is leveraging JavaScript's flexible interpretation of functions by wrapping our @talk@ function into another function that is properly scoped.  The explanation is as follows:
 
 # We first define a new prototype to the Function class called @bind@, which takes scope as a parameter.
-# As we are working with a function, @this@ on line 4 will resolve to the function being sent the @bind@ message.
+# As we are working with a function, @this@ on line 2 will resolve to the function being sent the @bind@ message.
 # We then return a function, that when executed, will actually execute the original function while applying the scope specified with the arguments passed.
-# Finally, we can cleanly bind our function to the appropriate scope at its definition on line 18 and call it normally on line 21.
+# Finally, we can cleanly bind our function to the appropriate scope at its definition on line 16 and call it normally on line 19.
 
 In this example, we can see how @apply@ is a better fit then @call@.  As JavaScript has a special variable called @arguments@ which acts like an Array, we can pass it to @apply@ and keep our function parameters intact.  Now that we have a method for hard-wiring scope on definition, we can return to our previous problem and make it work how we anticipated.
 

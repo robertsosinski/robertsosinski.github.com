@@ -31,7 +31,7 @@ describe 'the one_plus method' do
 end
 {% endhighlight %}
 
-Once you have that setup, spec it out to see if everything works as it should:
+Once you have that setup, run the spec to see if everything works as it should:
 
 {% highlight ruby linenos %}
 $ spec one_plus_spec.rb 
@@ -110,7 +110,7 @@ describe 'the one_plus method' do
 end
 {% endhighlight %}
 
-That looks a lot better. Notice that you not only have your new matcher available, but you can use your choice of either @be_two@ or @equal_two@.  Obviously, there is no need to have both in a test as they are the same exact matcher. This does help however, when the rules of the English language dictate so (e.g. "the_car.should have_wheels" vs. "the_wheelbarrow.should have_a_wheel").
+That looks a lot better. Notice that you not only have your new matcher available, but you can use your choice of either @be_two@ or @equal_two@.  Although there is no need to have both methods in this example, aliases do help when the rules of the English language dictate so (e.g. "the_car.should have_wheels" vs. "the_wheelbarrow.should have_a_wheel").
 
 There is one problem with our custom matcher, it is not very generic.  If we want to ensure we get the number 3, 4, 5 and up, that will require quite a few matchers to be built.  As such, lets write another matcher that lets us pass a parameter.
 

@@ -14,11 +14,11 @@ h3. Prerequisites
 
 h3. Setting up OpenSSL and AES
 
-You will be using Ruby's OpenSSL library to encrypt and decrypt forgotten password links with AES (Advanced Encryption Standard).  OpenSSL has everything you need to build SSL (Secure Sockets Layer) and TLS (Transport Layer Security) functionality directly into your Ruby application. However, for this tutorial you will be focusing on OpenSSL's set of symmetric mechanisms.
+You will be using Ruby's OpenSSL library to encrypt and decrypt forgotten password links with AES (Advanced Encryption Standard).  OpenSSL has everything you need to build SSL (Secure Sockets Layer) and TLS (Transport Layer Security) functionality directly into your Ruby application. However, for this tutorial you will be focusing on OpenSSL's set of symmetric encryption mechanisms.
 
 To get started, require the OpenSSL and SHA2 digest libraries.  Next, open a new module called Crypto and set the KEY constant to something you would consider a secret.  Keep in mind, if this key gets out into the open, you leave your application open to major attacks, so keep it hush hush.
 
-Next, make a private start module method that will prep AES in in the same way for encryption and decryption and place it at the end of your module.  Specifically, you will be using 256 bit AES in ECB (Electronic Code Book) mode.  Although there are more secure ways to run AES, ECB is more then sufficient for small strings and very easy to setup.  Also, run your key through an 256 bit SHA2 digest to ensure it is 256 bits in length.
+Next, make a private start module method that will prep AES in in the same way for encryption and decryption and place it at the end of your module.  Specifically, you will be using 256 bit AES in ECB (Electronic Code Book) mode.  Although there are more secure ways to run AES, ECB is more then sufficient for small strings and very easy to setup.  Also, run your key through a 256 bit SHA2 digest to ensure it is 256 bits in length.
 
 bq.. *What are block cipher modes?*
 
@@ -75,7 +75,7 @@ end
 
 h3. Migrations
 
-The next step is to migrate your database to include email address for your users.  Just build your migration as below and run rake db:migrate.
+The next step is to migrate your database to include an email address for your users.  Just build your migration as below and run rake db:migrate.
 
 {% highlight bash %}
 script/generate migration add_email_to_person
@@ -204,7 +204,7 @@ end
 
 h3. Mailer
 
-ActionMailer methods include the basic properties of any email (sender, recipient, subject and body), however also let you pass variables into body text.  Build yours as below.
+ActionMailer methods include the basic properties of any email (sender, recipient, subject and body), however also let you pass variables into the body text.  Build yours as below.
 
 {% highlight bash %}
 script/generate mailer Mailer
