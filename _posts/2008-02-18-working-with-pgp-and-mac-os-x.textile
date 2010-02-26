@@ -17,7 +17,7 @@ Asymmetric encryption however, uses two keys, a public and private one.  When us
 
 The other benefit of asymmetric encryption is that key pairs can be used to authenticate messages too.  This is done by encrypting information with your private key.  Upon receiving a message, the recipient will use your public key to decrypt it.  Encrypting any information with a private key for authentication purposes is referred to as creating a digital signature.
 
-For example.  I have my public key posted at "publickey.robertsosinski.com":http://publickey.robertsosinski.com as well on multiple public key servers.  Whenever someone wants to send me an encrypted message, they use my public key to encrypt it and their private key to sign it.  Once this is done, the only way to decrypt the message is to use my private key, which I keep heavily secured.  Upon receiving the encrypted message, I decrypt it with my private key and authenticate it with the senders public key.
+For example.  I have my public key posted at "http://robertsosinski.com/publickey.asc":/publickey.asc as well on multiple public key servers.  Whenever someone wants to send me an encrypted message, they use my public key to encrypt it and their private key to sign it.  Once this is done, the only way to decrypt the message is to use my private key, which I keep heavily secured.  Upon receiving the encrypted message, I decrypt it with my private key and authenticate it with the senders public key.
 
 Easy enough, lets get started.
 
@@ -546,7 +546,7 @@ This is my secret message to myself.
 
 *7.* Fantastic, you just sent your first secure message to yourself. That's all there is to it.
 
-bq.. What else can I encrypt and decrypt?
+bq.. *What else can I encrypt and decrypt?*
 
 You can use GPG for more then encrypting short messages.  Binary files, source code, Word documents, pictures, video, anything can be encrypted to keep it from prying eyes.  The format which you choose to output depends on how you wish to send the information.  A good rule of thumb is to output encrypted plain text (which would include markup like HTML and source code) with ASCII armor and output encrypted binary as binary (by not using the -a option).  However, if you wanted to send a picture to someone via email or some other messaging system (even printing it out and sending it via snail mail), then ASCII armor would be the best output to do it in.
 
