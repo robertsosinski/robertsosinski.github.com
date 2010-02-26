@@ -20,14 +20,18 @@
       <div id="navigation" class="section">
         <h1><a href="/" title="Robert Sosinski">Robert Sosinski</a></h1>
         
+        {% unless page.title == "home" %}
+          <a class="home" href="/">Back Home</a>
+        {% endunless %}
+        
         <ul>
           <li><a class="github" href="http://github.com/robertsosinski">Github</a></li>
           <li><a class="linkedin" href="http://www.linkedin.com/in/robertsosinski">Linkedin</a></li>
-          <li><a class="email" rel="nofollow" href="mailto:me@domain.com">Email</a></li>
+          <li><a class="email" rel="nofollow" href="">Email</a></li>
         </ul>
       </div>
       
-      <div id="content">
+      <div id="content" class="section">
         {% unless page.title == "home" %}
           <h2>{{ page.title }}</h2>
         {% endunless %}
@@ -35,8 +39,8 @@
         {{ content }}
       </div>
       
-      <div id="categories" class="section last">
-        <h2>Tutorials by Category</h2>
+      <div id="categories" class="section">
+        <h2>{% unless page.title == "home" %}More {% endunless %}Tutorials by Category</h2>
         
         {% for category in site.categories %}
           <div id="{{ category[0] | downcase | replace:" ","_" }}">

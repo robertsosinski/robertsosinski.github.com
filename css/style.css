@@ -1,9 +1,11 @@
+/* @override http://localhost:4000/css/style.css */
+
 body {
   font-size: 18px;
-  line-height:1.5;
+  line-height: 1.5;
   font-family: corbel, 'lucida grande', helvetica, sans-serif;
-  color:#212122;
-  background-color:#fff;
+  color: #212122;
+  background-color: #fff;
 }
 
 h1, h2, h3, h4, h5 {
@@ -15,7 +17,7 @@ a {
   color: #000080;
 }
 
-a.hover {
+a:hover {
   text-decoration: none;
 }
 
@@ -36,11 +38,24 @@ a.hover {
 #navigation h1 {
   margin-bottom: 0;
   font-size: 40px;
+  text-shadow: silver 2px 2px 2px;
 }
 
 #navigation h1 a {
   color: #000;
   text-decoration: none;
+}
+
+#navigation h1 a:hover {
+  color: #333;
+}
+
+#navigation a.home {
+  padding: 0 13px 0 20px;
+  background: url('../img/arrow_turn_left.png') no-repeat left center;
+  position: absolute;
+	left:50%;
+	margin-left:-375px;
 }
 
 #navigation ul {
@@ -73,7 +88,7 @@ a.hover {
   text-align: justify;
 }
 
-#content pre {
+#content code {
   font-size: 90%;
 }
 
