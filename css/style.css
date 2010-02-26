@@ -51,7 +51,7 @@ a:hover {
 }
 
 #navigation a.home {
-  padding: 0 13px 0 20px;
+  padding: 0 0 0 20px;
   background: url('../img/arrow_turn_left.png') no-repeat left center;
   position: absolute;
 	left:50%;
@@ -69,7 +69,8 @@ a:hover {
 }
 
 #navigation ul li a {
-  padding: 0 13px 0 20px;
+  padding: 0 0 0 20px;
+  margin-right: 13px;
 }
 
 #navigation ul li a.github {

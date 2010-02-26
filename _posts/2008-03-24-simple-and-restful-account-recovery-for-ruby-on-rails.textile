@@ -1,7 +1,7 @@
 ---
 layout: default
-title: Simple and Restful Account Recovery for Ruby on Rails
-blurb: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque in libero non nisi hendrerit eleifend id a nunc.
+title: Simple and RESTful Account Recovery for Ruby on Rails
+blurb: Use cryptographic protocols, customized routing configurations and the Rails ActionMailer library to securely help users who have forgotten their password.
 category: Ruby on Rails
 ---
 
@@ -293,9 +293,11 @@ Next, create your Help view.
   <legend>Help</legend>
 
 <p>
-  If you have forgotten your password, enter your name below and click the "Recover My Account" button.<br />
+  If you have forgotten your password, enter your name below 
+  and click the "Recover My Account" button.<br />
   <br />
-  An email will be sent with a link to your address on record. Click this link to login and change your password.<br />
+  An email will be sent with a link to your address on record. 
+  Click this link to login and change your password.<br />
   <br />
   The link given will no longer function after your password is changed. 
 </p>
@@ -319,7 +321,7 @@ And finally, your mailer view.
 {% highlight rhtml %}
 Please click the following link to recover your account:<br />
 <br />
-<%= link_to "http://#{@domain}#{recovery_session_path(@key)}", "http://#{@domain}#{recovery_session_path(@key)}" %>
+<% url = "http://#{@domain}#{recovery_session_path(@key)}" %><%= link_to url, url %>
 {% endhighlight %}
 
 h3. Conclusion

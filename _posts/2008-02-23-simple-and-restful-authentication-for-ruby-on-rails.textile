@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Simple and Restful Authentication for Ruby on Rails
-blurb: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque in libero non nisi hendrerit eleifend id a nunc.
+blurb: Leverage both Ruby on Rails and RESTful principals to build an elegant and flexable account management system for your application.
 category: Ruby on Rails
 ---
 
@@ -105,15 +105,18 @@ class Session < ActiveRecord::Base
  
   before_validation :authenticate_person
  
-  validates_presence_of :match, :message => 'for your name and password could not be found',
-                                :unless => :session_has_been_associated?
+  validates_presence_of :match,
+    :message => 'for your name and password could not be found',
+    :unless => :session_has_been_associated?
  
   before_save :associate_session_to_person
  
   private
  
   def authenticate_person
-    self.match = Person.find_by_name_and_password(self.name, self.password) unless session_has_been_associated?
+    unless session_has_been_associated?
+      self.match = Person.find_by_name_and_password(self.name, self.password)
+    end
   end
  
   def associate_session_to_person
@@ -147,11 +150,11 @@ class Person < ActiveRecord::Base
   validates_uniqueness_of :name, :message => "is already in use by another person"
  
   validates_format_of :name, :with => /^([a-z0-9_]{2,16})$/i,
-                      :message => "must be 4 to 16 letters, numbers or underscores and have no spaces"
+    :message => "must be 4 to 16 letters, numbers or underscores and have no spaces"
  
   validates_format_of :password, :with => /^([\x20-\x7E]){4,16}$/,
-                      :message => "must be 4 to 16 characters",
-                      :unless => :password_is_not_being_updated?
+    :message => "must be 4 to 16 characters",
+    :unless => :password_is_not_being_updated?
  
   validates_confirmation_of :password
  
@@ -251,7 +254,10 @@ class ApplicationController < ActionController::Base
   def maintain_session_and_user
     if session[:id]
       if @application_session = Session.find_by_id(session[:id])
-        @application_session.update_attributes(:ip_address => request.remote_addr, :path => request.path_info)
+        @application_session.update_attributes(
+          :ip_address => request.remote_addr,
+          :path => request.path_info
+        )
         @user = @application_session.person
       else
         session[:id] = nil

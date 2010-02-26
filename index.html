@@ -8,7 +8,7 @@ title: home
   {% for post in site.posts %}
     <h3><a class="title" href="{{ post.url }}">{{ post.title }}</a></h3>
     <p>{{ post.blurb }}</p>
-    <em>Posted on <span class="date">{{ post.date | date_to_long_string }}</span> in <a class="category" href="#{{post.category | downcase | replace:" ","_" }}">{{ post.category }}</a></em>
+    <p>Posted on <span class="date">{{ post.date | date_to_long_string }}</span> in <a class="category" href="#{{post.category | downcase | replace:" ","_" }}">{{ post.category }}</a></p>
   {% endfor %}
 </div>
 

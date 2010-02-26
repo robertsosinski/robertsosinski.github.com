@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Understanding Ruby Blocks, Procs and Lambdas
-blurb: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque in libero non nisi hendrerit eleifend id a nunc.
+blurb: See the small, yet important, differences between Ruby's unique closure options by looking under the hood and using each in different circumstances.
 category: Ruby
 ---
 
@@ -53,7 +53,7 @@ puts array.inspect
 
 To start off, we re-opened the Array class and put our @iterate!@ method inside.  We will keep with Ruby conventions and put a bang at the end, letting our users know to watch out, as this method might be dangerous!  We then use our @iterate!@ method just like Ruby's built in @collect!@ method.  The neat stuff however, is right in the middle of our @iterate!@ method definition.
 
-Unlike attributes, you do not need to specify the name of blocks within your methods.  Instead, you can use the yield keyword.  Calling this keyword will execute the code within the block provided to the method.  Also, notice how we are passing @n@ (the integer that the @each_with_index@ method is currently working with) to yield.  The attributes passed to yield corresponds to the variable specified in the piped list of the block (line 13). That value is now available to the block and returned by the yield call.  So to recap what is happening:
+Unlike attributes, you do not need to specify the name of blocks within your methods.  Instead, you can use the yield keyword.  Calling this keyword will execute the code within the block provided to the method.  Also, notice how we are passing @n@ (the integer that the @each_with_index@ method is currently working with) to yield.  The attributes passed to yield corresponds to the variable specified in the piped list of the block. That value is now available to the block and returned by the yield call.  So to recap what is happening:
 
 # Send @iterate!@ to the Array of numbers.
 # When yield is called with the number @n@ (first time is @1@, second time is @2@, etc...), pass the number to the block of code given.
@@ -85,7 +85,7 @@ puts array.inspect
 # => [1, 4, 9, 16]
 {% endhighlight %}
 
-Looks very similar to our previous example, however there are two differences.  First on line 2, we are passing an ampersand argument called code.  This argument is, conveniently enough, our block.  The second is on line 4, where instead of using yield, we send @call@ to our block of code.  The result is exactly the same.  However, if this is so, why even have this difference in syntax?  Well, it lets us learn a bit more about what blocks really are.  Take a look:
+Looks very similar to our previous example, however there are two differences.  First, we are passing an ampersand argument called code.  This argument is, conveniently enough, our block.  The second is in the middle of our @iterate!@ method definition, where instead of using yield, we send @call@ to our block of code.  The result is exactly the same.  However, if this is so, why even have this difference in syntax?  Well, it lets us learn a bit more about what blocks really are.  Take a look:
 
 {% highlight ruby %}
 def what_am_i(&block)
@@ -133,7 +133,7 @@ bq.. *Why lowercase block and uppercase Proc?*
 
 I always write Proc as uppercase as it is a proper class within Ruby.  However, blocks do not have a class of their own (they are just Procs after all) and are just a type of syntax within Ruby.  As such, I write block in lowercase.  Later in this tutorial, you will see me also writing lambda in lowercase.  I do so for the same reason.
 
-p. Notice how we do not prepend an ampersand to the code attribute in our @iterate!@ method. This is because passing Procs is no different then passing any other data type, as noticed in line 18 and 19.  As Procs are treated just like any other object, we can start having some fun and push Ruby's interpreter to do some interesting things.  Give this a try:
+p. Notice how we do not prepend an ampersand to the code attribute in our @iterate!@ method. This is because passing Procs is no different then passing any other data type.  As Procs are treated just like any other object, we can start having some fun and push Ruby's interpreter to do some interesting things.  Give this a try:
 
 {% highlight ruby %}
 class Array
@@ -262,7 +262,7 @@ puts generic_return(lambda { return "lambda" })
 # => generic_return method finished
 {% endhighlight %}
 
-Part of Ruby's syntax is that arguments (a Proc on line 6 ) cannot have a return keyword in it.  However, a lambda acts just like a method, which can have a literal return, and thus sneaks by this requirement unscathed!  This different in semantics shows up in situations like the following example.
+Part of Ruby's syntax is that arguments (a Proc in this example) cannot have a return keyword in it.  However, a lambda acts just like a method, which can have a literal return, and thus sneaks by this requirement unscathed!  This different in semantics shows up in situations like the following example.
 
 {% highlight ruby %}
 def generic_return(code)

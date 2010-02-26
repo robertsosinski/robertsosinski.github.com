@@ -1,7 +1,7 @@
 ---
 layout: default
 title: The Difference Between Ruby Symbols and Strings
-blurb: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque in libero non nisi hendrerit eleifend id a nunc.
+blurb: Learn about String mutability, why it can cause unintended consequences and how Symbols can speed up your programs execution while ensuring consistent operation.
 category: Ruby
 ---
 

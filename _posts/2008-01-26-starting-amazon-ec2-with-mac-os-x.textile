@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Starting Amazon EC2 with Mac OS X
-blurb: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque in libero non nisi hendrerit eleifend id a nunc.
+blurb: Go through the entire processes of creating your first EC2 server, using SSH to login to it, having it serve a webpage and then terminating it when finished.
 category: Systems
 ---
 
@@ -30,8 +30,8 @@ First off, you have to set up your computer so you can connect to and administer
 *4.* Select the "X.509 certificates" link.
 
 *5.* Click on the "Create New" link. Amazon will ask you if you are sure, say yes.  Doing so will generate two files.
-* A PEM encoded X.509 certificate named something like  cert-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.pem
-* A PEM encoded RSA private key named something like  pk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.pem
+* A PEM encoded X.509 certificate named something like  cert-xxxxxxx.pem
+* A PEM encoded RSA private key named something like  pk-xxxxxxx.pem
 
 *6.* Download both of these files.
 
@@ -56,8 +56,8 @@ $ open .
 
 *10.* Unzip the Amazon EC2 Command-Line Tools, look in the new directory and move both the bin and lib directory into your ~/.ec2 directory.   This directory should now have the following:
 
-* The cert-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.pem file
-* The pk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.pem file
+* The cert-xxxxxxx.pem file
+* The pk-xxxxxxx.pem file
 * The bin directory
 * The lib directory
 
@@ -95,14 +95,14 @@ The -o option stands for owner.  In this example, you are asking EC2 to describe
 p. *2.* After a short wait, you will be given a list of available images which should look something like this.
 
 {% highlight bash %}
-IMAGE   ami-20b65349    ec2-public-images/fedora-core4-base.manifest.xml         amazon  available       public
-IMAGE   ami-22b6534b    ec2-public-images/fedora-core4-mysql.manifest.xml        amazon  available       public
-IMAGE   ami-23b6534a    ec2-public-images/fedora-core4-apache.manifest.xml       amazon  available       public
-IMAGE   ami-25b6534c    ec2-public-images/fedora-core4-apache-mysql.manifest.xml amazon  available       public
-IMAGE   ami-26b6534f    ec2-public-images/developer-image.manifest.xml           amazon  available       public
-IMAGE   ami-2bb65342    ec2-public-images/getting-started.manifest.xml           amazon  available       public
-IMAGE   ami-36ff1a5f    ec2-public-images/fedora-core6-base-x86_64.manifest.xml  amazon  available       public
-IMAGE   ami-bd9d78d4    ec2-public-images/demo-paid-AMI.manifest.xml             amazon  available       public  A79EC0DB
+IMAGE   ami-20b65349    ec2-public-images/fedora-core4-base.manifest.xml
+IMAGE   ami-22b6534b    ec2-public-images/fedora-core4-mysql.manifest.xml
+IMAGE   ami-23b6534a    ec2-public-images/fedora-core4-apache.manifest.xml
+IMAGE   ami-25b6534c    ec2-public-images/fedora-core4-apache-mysql.manifest.xml
+IMAGE   ami-26b6534f    ec2-public-images/developer-image.manifest.xml
+IMAGE   ami-2bb65342    ec2-public-images/getting-started.manifest.xml
+IMAGE   ami-36ff1a5f    ec2-public-images/fedora-core6-base-x86_64.manifest.xml
+IMAGE   ami-bd9d78d4    ec2-public-images/demo-paid-AMI.manifest.xml
 {% endhighlight %}
 
 *3.* Lets create something simple for now, a Fedora Core 4 machine with Apache. To do this, we need to generate a keypair.  This keypair will supply the credentials we need to SSH (Secure Shell) into our server instance.  To make a new keypair named ec2-keypair, type the following:
@@ -126,7 +126,7 @@ $ chmod 600 ec2-keypair
 {% highlight bash %}
 $ ec2-run-instances ami-23b6534a -k ec2-keypair
 RESERVATION     r-xxxxxxxx      xxxxxxxxxxxx    default
-INSTANCE        i-xxxxxxxx      ami-23b6534a                    pending ec2-keypair     0               m1.small        2008-01-25T19:38:04+0000
+INSTANCE        i-xxxxxxxx      ami-23b6534a                    pending ec2-keypair
 {% endhighlight %}
 
 *7.* It may take a bit for EC2 to start your new machine, but you can always check its status by typing:
@@ -134,7 +134,7 @@ INSTANCE        i-xxxxxxxx      ami-23b6534a                    pending ec2-keyp
 {% highlight bash %}
 $ ec2-describe-instances
 RESERVATION     r-xxxxxxxx      xxxxxxxxxxxx    default
-INSTANCE        i-xxxxxxxx      ami-23b6534a    ec2-xx-xxx-xx-xx.compute-1.amazonaws.com        domU-xx-xx-xx-xx-xx-E2.compute-1.internal    running ec2-keypair
+INSTANCE        i-xxxxxxxx      ami-23b6534a    ec2-xx-xxx-xx-xx.compute-1.amazonaws.com
 {% endhighlight %}
 
 *8.* Great, your instance is up and running.  Take note of your server's web address (ec2-xx-xxx-xx-xx.compute-1.amazonaws.com) and ID (i-xxxxxxxx) as you will need both of these later in this tutorial.  If you forget them, you can always type the ec2-describe-instances command again.  Now, lets prep our server by enabling port 22 for SSH access and port 80 so Apache can serve web pages.
@@ -190,7 +190,7 @@ INSTANCE        i-xxxxxxxx      running shutting-down
 {% highlight bash %}
 $ ec2-describe-instances
 RESERVATION     r-xxxxxxxx      xxxxxxxxxxxx    default
-INSTANCE        i-xxxxxxxx      ami-23b6534a                    terminated      ec2-keypair     0               m1.small    2008-01-25T19:38:04+0000
+INSTANCE        i-xxxxxxxx      ami-23b6534a                    terminated
 {% endhighlight %}
 
 *3.* Done and done.

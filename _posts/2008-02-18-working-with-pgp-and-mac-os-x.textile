@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Working with PGP and Mac OS X
-blurb: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque in libero non nisi hendrerit eleifend id a nunc.
+blurb: Progresses step-by-step through the processes of installing Gnu Privacy Guard, generating and maintaining your key pair and sending yourself an encrypted message, all while learning key cryptographic principals along the way.
 category: Security
 ---
 
@@ -392,7 +392,7 @@ PGP also offers an easy way to verify public keys as every one also has a 40 cha
 
 {% highlight bash %}
 $ gpg --import publickey.asc
-gpg: key A7327C0E: "First and Last Name (Mac GPG Tutorial) <name@domain.com>" public key imported
+gpg: key A7327C0E: "First and Last Name (Mac GPG Tutorial) <name@domain.com>"
 gpg: Total number processed: 1
 gpg:               imported: 1
 {% endhighlight %}
@@ -413,7 +413,7 @@ Enter number(s), N)ext, or Q)uit >
 
 {% highlight bash %}
 gpg: requesting key A7327C0E from hkp server subkeys.pgp.net
-gpg: key A7327C0E: "First and Last Name (Mac GPG Tutorial) <name@domain.com>" public key imported
+gpg: key A7327C0E: "First and Last Name (Mac GPG Tutorial) <name@domain.com>"
 gpg: Total number processed: 1
 gpg:               imported: 1
 {% endhighlight %}

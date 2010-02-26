@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Up and Running with Custom RSpec Matchers
-blurb: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque in libero non nisi hendrerit eleifend id a nunc.
+blurb: Start writing flexible matching methods that make your specs read well enough to act as documentation for other developers.
 category: Ruby
 ---
 
