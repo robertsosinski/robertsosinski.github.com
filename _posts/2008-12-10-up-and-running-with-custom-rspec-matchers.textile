@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Up and Running with Custom RSpec Matchers
+blurb: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque in libero non nisi hendrerit eleifend id a nunc.
 category: Ruby
 ---
 
@@ -10,7 +11,7 @@ h3. Getting Started
 
 Lets keep things easy and center our tests around a very simple method, @one_plus@, and stuff it into a file called "one_plus.rb"
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 def one_plus(number)
   1 + number
 end
@@ -18,7 +19,7 @@ end
 
 The purpose of one_plus is just to add one to any number we pass to it.  Although we are pretty sure it will work as anticipated, lets spec it out anyway for good measure.  First, ensure you have the latest rspec gem installed from "GitHub":http://github.com/dchelimsky/rspec.  Then, make a new file called "one_plus_spec.rb" and fill it in with the following:
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 require 'rubygems'
 require 'spec'
 require 'one_plus'
@@ -33,7 +34,7 @@ end
 
 Once you have that setup, run the spec to see if everything works as it should:
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 $ spec one_plus_spec.rb 
 .
 
@@ -50,7 +51,7 @@ RSpec has an easy to use, albeit unique, manner of letting developers write thei
 
 Start off by creating a new file called "matchers.rb" and adding the following matcher to it.  Don't worry if everything seems new to you, we will go over it next.
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 module Matchers
   class BeTwo
     def matches?(actual)
@@ -89,7 +90,7 @@ h3. Using Custom Matchers
 
 Now that you have your "matchers.rb" file setup, require it into your "one_plus_spec.rb" file and make your @Matchers@ module available to RSpec.  Then, start using it in your your tests:
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 require 'rubygems'
 require 'spec'
 require 'one_plus'
@@ -118,7 +119,7 @@ h3. Back to the Drawing Board
 
 Go back to your "matchers.rb" file and make a new matcher called @AddUpTo@:
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 module Matchers  
   class AddUpTo
     def initialize(expected)
@@ -147,7 +148,7 @@ end
 
 Notice how it looks almost like your previous matcher, but also defines an initialize method.  By initializing your matcher, you can now pass any parameters given to it over to the @matches?@ method.  As such, we can make a flexible matcher that is also very readable.  Lets see how it looks in our RSpec test.
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 require 'rubygems'
 require 'spec'
 require 'one_plus'

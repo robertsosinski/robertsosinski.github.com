@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Binding Scope in JavaScript
+blurb: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque in libero non nisi hendrerit eleifend id a nunc.
 category: JavaScript
 ---
 
@@ -10,7 +11,7 @@ h3. Starting Simple
 
 Lets start off by making a simple script to test the scope of a function using the Firebug console.
 
-{% highlight javascript linenos %}
+{% highlight javascript %}
 window.name = "window";
 
 action = function(greeting) {
@@ -30,7 +31,7 @@ p. In the above example, we assigned a variable to the global @window@ object ca
 
 This pattern works well until we have a lot of functions and variables floating around our program.  Once this happens, we can employ objects in JavaScript to act as containers.
 
-{% highlight javascript linenos %}
+{% highlight javascript %}
 window.name = "window";
 
 object = {
@@ -52,7 +53,7 @@ h3. Losing Scope and Getting it Back
 
 Our function requires a bit more logic, as many functions do.  To handle this, we will nest a function within our @action@ function called @nestedAction@.  It is here when things go awry.
 
-{% highlight javascript linenos %}
+{% highlight javascript %}
 window.name = "window";
 
 object = {
@@ -76,7 +77,7 @@ Hmm, our @nestedAction@ function is indeed contained within @object@, however @t
 
 In short, Once we executed a function nested within a function, JavaScript lost our scope and is defaulting to the best thing it can get, @window@.  To get our scope back, JavaScript offers us two useful functions, @call@ and @apply@.
 
-{% highlight javascript linenos %}
+{% highlight javascript %}
 object = {
   name: "object",
 
@@ -102,7 +103,7 @@ You will also notice that @call@ and @apply@ perform exactly the same, except fo
 
 So, how flexible are @call@ and @apply@ at managing scope in JavaScript?  Very flexible, as we can see with the following code:
 
-{% highlight javascript linenos %}
+{% highlight javascript %}
 window.name = "the window";
 
 alice = {
@@ -132,7 +133,7 @@ h3. Binding Scope
 
 A very handy addition to tag along with the "Prototype":http://prototypejs.org JavaScript library is "bind":http://prototypejs.org/api/function/bind.  The concept is simple, would it not be useful to hard-wire a function's scope at definition instead of execution?  Well, with a little bit of JavaScript hackery, we can build our own @bind@ function and do just that.  Take a look:
 
-{% highlight javascript linenos %}
+{% highlight javascript %}
 Function.prototype.bind = function(scope) {
   var _function = this;
   
@@ -165,7 +166,7 @@ The above example uses the same technique as Prototype, albeit syntactically dif
 
 In this example, we can see how @apply@ is a better fit then @call@.  As JavaScript has a special variable called @arguments@ which acts like an Array, we can pass it to @apply@ and keep our function parameters intact.  Now that we have a method for hard-wiring scope on definition, we can return to our previous problem and make it work how we anticipated.
 
-{% highlight javascript linenos %}
+{% highlight javascript %}
 Function.prototype.bind = function(scope) {
   var _function = this;
   

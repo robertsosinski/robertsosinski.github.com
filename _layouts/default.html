@@ -1,43 +1,59 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>{{ page.title }}</title>
+    {% if page.title == "home" %}
+      <title>Robert Sosinski</title>
+    {% else %}
+      <title>{{ page.title }} - Robert Sosinski</title>
+    {% endif %}
     
     <link href="/css/style.css" media="all" rel="stylesheet" type="text/css" />
     <link href="/css/syntax.css" media="all" rel="stylesheet" type="text/css" />
     
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/ejs.min.js"></script>
+    <script type="text/javascript" src="/js/site.js"></script>
   </head>
 
   <body>
-    <div id="navigation">
-      <h2><a href="/">Robert Sosinski</a></h2>
+    <div id="container">
+      <div id="navigation" class="section">
+        <h1><a href="/" title="Robert Sosinski">Robert Sosinski</a></h1>
+        
+        <ul>
+          <li><a class="github" href="http://github.com/robertsosinski">Github</a></li>
+          <li><a class="linkedin" href="http://www.linkedin.com/in/robertsosinski">Linkedin</a></li>
+          <li><a class="email" rel="nofollow" href="mailto:me@domain.com">Email</a></li>
+        </ul>
+      </div>
       
-      <ul>
-        <li><a href="http://github.com/robertsosinski.com">Github</a></li>
-        <li><a href="http://linkedin.com/in/robertsosinski.com">Linkedin</a></li>
-        <li><a href="mailto:me@domain.com">Email</a></li>
-      </ul>
-    </div>
-    
-    <div id="content">
-      <h1>{{ page.title }}</h1>
+      <div id="content">
+        {% unless page.title == "home" %}
+          <h2>{{ page.title }}</h2>
+        {% endunless %}
+        
+        {{ content }}
+      </div>
       
-      {{ content }}
-    </div>
-    
-    <div id="posts">
-      {% for category in site.categories %}
-        <div id="{{ category[0] | downcase | replace:" ","_" }}">
-          <h3>{{ category[0] }}</h3>
-
-          <ul>
-            {% for post in category[1] %}
-              <li><a href="{{ post.url }}">{{ post.title }}</a></li>
-            {% endfor %}
-          </ul>
-        </div>
-      {% endfor %}
+      <div id="categories" class="section last">
+        <h2>Tutorials by Category</h2>
+        
+        {% for category in site.categories %}
+          <div id="{{ category[0] | downcase | replace:" ","_" }}">
+            <h3>{{ category[0] }}</h3>
+            
+            <ul>
+              {% for post in category[1] %}
+                <li><a href="{{ post.url }}">{{ post.title }}</a></li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endfor %}
+      </div>
+      
+      <div id="footer">
+        Copyright &copy; {{ site.time | date:"%Y" }} Robert Sosinski - Powered by <a href="http://github.com/mojombo/jekyll">Jekyll</a> and <a href="http://github.com/">Github</a>
+      </div>
     </div>
   </body>
 </html>

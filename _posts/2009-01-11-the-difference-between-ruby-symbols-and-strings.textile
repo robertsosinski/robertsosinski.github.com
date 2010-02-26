@@ -1,6 +1,7 @@
 ---
 layout: default
 title: The Difference Between Ruby Symbols and Strings
+blurb: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque in libero non nisi hendrerit eleifend id a nunc.
 category: Ruby
 ---
 
@@ -12,7 +13,7 @@ The truth of the matter is that Symbols are Strings, just with an important diff
 
 So, how flexible are Symbols in terms of representing data?  The answer is just as flexible as Strings.  Lets take a look at some valid Strings and their Symbol equivalents.
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 "hello"
 :hello
 
@@ -27,14 +28,14 @@ bang = "!"
 
 Many Ruby programmers think that Symbols can only contain alphanumeric characters, however by using quotes you can not only use the same characters as you would a String, but also interpolate Symbols as well.  The only thing that a Symbol needs syntactically is a colon @:@ prepended. Symbols are actually so similar to Strings that converting between the two is very simple and consistent.
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 :"hello world".to_s # => "hello world"
 "hello world".intern # => :"hello world"
 {% endhighlight %}
 
 This being the case, what can't Symbols do?  Well, they cant change.
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 puts "hello" << " world"
 puts :hello << :" world"
 
@@ -48,7 +49,7 @@ h3. Mutability Gone Wrong
 
 Strings often perform double duty in an program by both storing data and driving operation.  For holding data, mutability offers us a slew of expressive options.  However, a programs operation (especially in critical applications) should be a bit more ridged.  Take the following example:
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 status = "peace"
 
 buggy_logger = status
@@ -76,7 +77,7 @@ h3. Frozen Strings
 
 There are two ways to handle the mutability issue above.  The first is to freeze the String and thus making it immutable.  Once a String is frozen it cannot be changed.
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 example = "hello world"
 example.upcase!
 
@@ -95,7 +96,7 @@ h3. String and Symbol Performance
 
 Because Strings are mutable, the Ruby interpreter never knows what that String may hold in terms of data.  As such, every String needs to have its own place in memory.  We can see this by creating some Strings and printing their object id.
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 puts "hello world".object_id
 puts "hello world".object_id
 puts "hello world".object_id
@@ -121,7 +122,7 @@ What we see above might not seem like a big issue, but behind the scenes is some
 
 Ruby's garbage collector, or GC, is of the mark and sweep variety. This means that objects to be destroyed are marked during the programs operation.  The GC then sweeps up all the marked objects on the heap whenever it has some spare time.  However, above we are creating a new object, storing and ultimately destroying it when reusing the same object would be much more efficient.  Lets do the same thing but with Symbols instead.
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 puts :"hello world".object_id
 puts :"hello world".object_id
 puts :"hello world".object_id
@@ -137,7 +138,7 @@ puts :"hello world".object_id
 
 This time, every Symbol shares the same object id, and as such the same space on the heap. To further increase performance, Ruby will not mark Symbols for destruction, allowing you to reuse them again and again. As Symbols stay in memory throughout the programs operation, we can quickly snag them from memory instead of instantiating a new copy every time. In fact, Symbols are not only stored in memory, they are also keep track of via an optimized Symbols dictionary. You can see it by running the next example.
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 puts Symbol.all_symbols.inspect
 
 # => A long list of Symbols...
@@ -156,7 +157,7 @@ The @all_symbols@ class method will return an Array of every Symbol currently us
 
 So how much faster are Symbols compared to Strings?  Well, lets build a script to benchmark the difference.
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 require 'benchmark'
 
 str = Benchmark.measure do
@@ -192,7 +193,7 @@ Symbol: 1.33
 
 On average, we are getting a 40% increase solely by using Symbols.  However, Symbols are not just faster then Strings in how they are stored and used, but also in how they are compared. As Symbols of the same text share the same space on the heap, testing for equality is as quick as comparing the object id's.  Testing equality for Strings however, is a bit more computationally expensive. As every String has its own place in memory, the interpreter has to compare the actual data making up the String. A good example to visualize this type of check would be the following:
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 a = "test".split(//)
 b = "test".split(//)
 e = true
@@ -220,7 +221,7 @@ puts "#{a.join} equal to #{b.join}: #{e}"
 
 So, back to benchmarking.  How much faster is comparing Symbols then to Strings?  Lets find out:
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 require 'benchmark'
 
 str = Benchmark.measure do

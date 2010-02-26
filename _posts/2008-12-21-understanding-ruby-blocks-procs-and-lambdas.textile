@@ -1,6 +1,7 @@
 ---
 layout: default
 title: Understanding Ruby Blocks, Procs and Lambdas
+blurb: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque in libero non nisi hendrerit eleifend id a nunc.
 category: Ruby
 ---
 
@@ -10,7 +11,7 @@ h3. First Up, Blocks
 
 The most common, easiest and arguably most "Ruby like" way to use closures in Ruby is with blocks.  They have the following familiar syntax:
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 array = [1, 2, 3, 4]
   
 array.collect! do |n|
@@ -30,7 +31,7 @@ So, what is going on here?
 
 Using a block with the @collect!@ method is pretty easy, we just have to think that @collect!@ will use the code provided within the block on each element in the array.  However, what if we want to make our own @collect!@ method?  What will it look like? Well, lets build a method called @iterate!@ and see.
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 class Array
   def iterate!
     self.each_with_index do |n, i|
@@ -64,7 +65,7 @@ What we now have is a flexible way to interact with our method.  Think of blocks
 
 However, that is just the beginning. Using yield is one way to use your block of code, however there is another.  By calling it as a Proc.  Take a look.
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 class Array
   def iterate!(&code)
     self.each_with_index do |n, i|
@@ -86,7 +87,7 @@ puts array.inspect
 
 Looks very similar to our previous example, however there are two differences.  First on line 2, we are passing an ampersand argument called code.  This argument is, conveniently enough, our block.  The second is on line 4, where instead of using yield, we send @call@ to our block of code.  The result is exactly the same.  However, if this is so, why even have this difference in syntax?  Well, it lets us learn a bit more about what blocks really are.  Take a look:
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 def what_am_i(&block)
   block.class
 end
@@ -102,7 +103,7 @@ h3. Procedures, AKA, Procs
 
 Blocks are very handy and syntactically simple, however we may want to have many different blocks at our disposal and use them multiple times.  As such, passing the same block again and again would require us to repeat ourself.  However, as Ruby is fully object-oriented, this can be handled quite cleanly by saving reusable code as an object itself.  This reusable code is called a Proc (short for procedure).  The only difference between blocks and Procs is that a block is a Proc that cannot be saved, and as such, is a one time use solution.  By working with Procs, we can start doing the following:
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 class Array
   def iterate!(code)
     self.each_with_index do |n, i|
@@ -134,7 +135,7 @@ I always write Proc as uppercase as it is a proper class within Ruby.  However, 
 
 p. Notice how we do not prepend an ampersand to the code attribute in our @iterate!@ method. This is because passing Procs is no different then passing any other data type, as noticed in line 18 and 19.  As Procs are treated just like any other object, we can start having some fun and push Ruby's interpreter to do some interesting things.  Give this a try:
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 class Array
   def iterate!(code)
     self.each_with_index do |n, i|
@@ -158,7 +159,7 @@ The above is how most languages handle closures and is exactly the same as sendi
 
 If this is the case, why just not use blocks exclusively?  Well, the answer is simple, what if we want to pass two or more closures to a method?  If this is the case, blocks quickly become too limiting.  By having Procs however, we can do something like this:
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 def callbacks(procs)
   procs[:starting].call
 
@@ -186,7 +187,7 @@ h3. Lambdas
 
 So far, you have used Procs in two ways, passing them directly as an attribute and saving them as a variable.  These Procs act very similar to what other languages call anonymous functions, or lambdas.  To make things more interesting, lambdas are available within Ruby too.  Take a look:
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 class Array
   def iterate!(code)
     self.each_with_index do |n, i|
@@ -206,7 +207,7 @@ puts array.inspect
 
 On first look, lambdas seem to be exactly the same as Procs.  However, there are two subtle differences.  The first difference is that, unlike Procs, lambdas check the number of arguments passed.
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 def arguments(code)
   one, two = 1, 2
   code.call(one, two)
@@ -224,7 +225,7 @@ We see with the Proc example, extra variables are set to @nil@.  However with la
 
 The second difference is that lambdas have diminutive returns. What this means is that while a Proc return will stop a method and return the value provided, lambdas will return their value to the method and let the method continue on. Confused?  Lets take a look at an example.
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 def proc_return
   Proc.new { return "Proc.new"}.call
   return "proc_return method finished"
@@ -248,7 +249,7 @@ The answer is in the conceptual differences between procedures and methods.  Pro
 
 So, when should you write an anonymous method (lambda) instead of a Proc?  The following code shows one such case.
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 def generic_return(code)
   code.call
   return "generic_return method finished"
@@ -261,9 +262,9 @@ puts generic_return(lambda { return "lambda" })
 # => generic_return method finished
 {% endhighlight %}
 
-Part of Ruby's syntax is that arguments (a Proc on line 8 ) cannot have a return keyword in it.  However, a lambda acts just like a method, which can have a literal return, and thus sneaks by this requirement unscathed!  This different in semantics shows up in situations like the following example.
+Part of Ruby's syntax is that arguments (a Proc on line 6 ) cannot have a return keyword in it.  However, a lambda acts just like a method, which can have a literal return, and thus sneaks by this requirement unscathed!  This different in semantics shows up in situations like the following example.
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 def generic_return(code)
   one, two    = 1, 2
   three, four = code.call(one, two)
@@ -292,7 +293,7 @@ h3. Method Objects
 
 So, you already have a method that works, but you want to pass it to another method as a closure and keep your code "DRY":http://en.wikipedia.org/wiki/Don%27t_repeat_yourself. To do this, you can take advantage of Ruby's @method@ method.
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 class Array
   def iterate!(code)
     self.each_with_index do |n, i|
@@ -316,7 +317,7 @@ puts array.inspect
 
 In this example, we already have a method called @square@ that would work out just fine for the task at hand.  As such, we can reuse it as a parameter by converting it into a Method object and passing it to our @iterate!@ method.  But, what is this new object type?
 
-{% highlight ruby linenos %}
+{% highlight ruby %}
 def square(n)
   n ** 2
 end
