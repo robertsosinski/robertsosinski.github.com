@@ -46,10 +46,6 @@ a:hover {
   text-decoration: none;
 }
 
-#navigation h1 a:hover {
-  color: #333;
-}
-
 #navigation a.home {
   padding: 0 0 0 20px;
   background: url('../img/arrow_turn_left.png') no-repeat left center;

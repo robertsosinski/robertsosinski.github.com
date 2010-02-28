@@ -16,7 +16,7 @@
       var a = "mail";
       var b = "to:";
       var c = "email";
-      var d = document.location.hostname.replace("github.", "");
+      var d = document.location.hostname.replace("www.", "");
       var e = (a+b+c+"@"+d);
             
       $("a.email").attr("href", e);

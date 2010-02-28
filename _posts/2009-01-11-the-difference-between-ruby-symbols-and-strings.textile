@@ -179,14 +179,16 @@ puts
 
 In this example, we are creating 10 million new Strings and then 10 million new Symbols. With the Benchmark library, we can find out how long each activity takes and compare. After running this script three times, I got the following results (yours will most likely be different).
 
-{% highlight bash %}String: 2.24
+{% highlight bash %}
+$ ruby benchmark.rb
+String: 2.24
 Symbol: 1.32
 
-$ ruby example-9.rb
+$ ruby benchmark.rb
 String: 2.25
 Symbol: 1.32
 
-$ ruby example-9.rb
+$ ruby benchmark.rb
 String: 2.24
 Symbol: 1.33
 {% endhighlight %}
@@ -244,14 +246,15 @@ puts
 Just like before, I ran this script three times and got the following results.
 
 {% highlight bash %}
+$ ruby benchmark.rb
 String: 4.48
 Symbol: 2.39
 
-$ ruby example-11.rb
+$ ruby benchmark.rb
 String: 4.47
 Symbol: 2.39
 
-$ ruby example-11.rb
+$ ruby benchmark.rb
 String: 4.47
 Symbol: 2.38
 {% endhighlight %}

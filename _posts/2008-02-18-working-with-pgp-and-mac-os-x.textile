@@ -424,7 +424,7 @@ gpg:               imported: 1
 $ gpg --fingerprint A7327C0E
 pub   1024D/A7327C0E 2008-02-14
       Key fingerprint = 2291 60E9 A962 5C22 6E4F  1F20 120A 2881 A732 7C0E
-uid                  First and Last Name (Mac GPG Tutorial) <name@domain.com>;
+uid                  First and Last Name (Mac GPG Tutorial) <name@domain.com>
 sub   2048g/60ED8082 2008-02-14
 {% endhighlight %}
 

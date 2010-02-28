@@ -85,7 +85,7 @@ puts array.inspect
 # => [1, 4, 9, 16]
 {% endhighlight %}
 
-Looks very similar to our previous example, however there are two differences.  First, we are passing an ampersand argument called code.  This argument is, conveniently enough, our block.  The second is in the middle of our @iterate!@ method definition, where instead of using yield, we send @call@ to our block of code.  The result is exactly the same.  However, if this is so, why even have this difference in syntax?  Well, it lets us learn a bit more about what blocks really are.  Take a look:
+Looks very similar to our previous example, however there are two differences.  First, we are passing an ampersand argument called @&code@.  This argument is, conveniently enough, our block.  The second is in the middle of our @iterate!@ method definition, where instead of using @yield@, we send @call@ to our block of code.  The result is exactly the same.  However, if this is so, why even have this difference in syntax?  Well, it lets us learn a bit more about what blocks really are.  Take a look:
 
 {% highlight ruby %}
 def what_am_i(&block)
