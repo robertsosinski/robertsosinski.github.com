@@ -1,5 +1,3 @@
-/* @override http://localhost:4000/css/style.css */
-
 body {
   font-size: 18px;
   line-height: 1.5;
@@ -50,8 +48,8 @@ a:hover {
   padding: 0 0 0 20px;
   background: url('../img/arrow_turn_left.png') no-repeat left center;
   position: absolute;
-	left:50%;
-	margin-left:-375px;
+  left: 50%;
+  margin-left: -375px;
 }
 
 #navigation ul {
