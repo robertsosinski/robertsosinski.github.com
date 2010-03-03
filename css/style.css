@@ -83,6 +83,10 @@ a:hover {
   text-align: justify;
 }
 
+#content pre {
+  line-height: 1.2;
+}
+
 #content code {
   font-size: 90%;
 }
