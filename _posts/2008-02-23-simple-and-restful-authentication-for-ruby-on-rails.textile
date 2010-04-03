@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Simple and Restful Authentication for Ruby on Rails
+title: Simple and RESTful Authentication for Ruby on Rails
 blurb: Leverage both Ruby on Rails and RESTful principals to build an elegant and flexable account management system for your application.
 category: Ruby on Rails
 ---
@@ -214,7 +214,7 @@ end
 
 h3. The Application Controller
 
-Maintaining the session is the first duty of your Application Controller.  Once logged in, the user's current session should keep track of their IP address and current path.  In order to easily access a user's account and session information throughout your application, you will also create the @user and @application_session variables.  Note that you are calling it @application_session and not @session.  This differentiation ensures that a user's session information is never overwritten by the Sessions Controller.
+Maintaining the session is the first duty of your Application Controller.  Once logged in, the user's current session should keep track of their IP address and current path.  In order to easily access a user's account and session information throughout your application, you will also create the @@user@ and @@application_session@ variables.  Note that you are calling it @@application_session@ and not @@session@.  This differentiation ensures that a user's session information is never overwritten by the Sessions Controller.
 
 To ensure users do not get an error if you delete a Session from the database that they have a cookie for, you should also have a quick check to see if the requested session can even be found.  If not, just delete the user's cookie and redirect them back home.
 

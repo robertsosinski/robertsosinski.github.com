@@ -33,7 +33,7 @@ Many Ruby programmers think that Symbols can only contain alphanumeric character
 "hello world".intern # => :"hello world"
 {% endhighlight %}
 
-This being the case, what can't Symbols do?  Well, they cant change.
+This being the case, what can't Symbols do?  Well, they can't change.
 
 {% highlight ruby %}
 puts "hello" << " world"
