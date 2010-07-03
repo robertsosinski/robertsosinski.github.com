@@ -25,7 +25,7 @@ h3. Installing the Software
 
 *1.* PGP comes in many implementations, however the one you will be using in this tutorial is GPG (GNU Privacy Guard) as it follows the OpenPGP standard, is completely free and offers an easy to use Mac OS X installer.
 
-Get the Mac GPG installer for your version of Mac OS X from Sourceforge at "http://macgpg.sourceforge.net":http://macgpg.sourceforge.net.
+Get the Mac GPG installer for your version of Mac OS X from "http://macgpg.sourceforge.net":http://macgpg.sourceforge.net.
 
 bq.. *What are PGP Implementations?* 
 

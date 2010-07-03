@@ -56,7 +56,7 @@ module Crypto
   def self.decrypt(cipher_hex)
     crypto = start(:decrypt)
     
-    cipher_text = cipher_hex.gsub(/(..)/){|h| h.hex.chr}
+    cipher_text = [cipher_hex].pack("H*")
     
     plain_text = crypto.update(cipher_text)
     plain_text << crypto.final
@@ -109,7 +109,8 @@ class Person < ActiveRecord::Base
   
   ...
   
-  validates_format_of :email, :with => /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}/i,
+  validates_format_of :email,
+                      :with => /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}/i,
                       :message => "must be a valid address"
   
   ...
@@ -321,7 +322,8 @@ And finally, your mailer view.
 {% highlight rhtml %}
 Please click the following link to recover your account:<br />
 <br />
-<% url = "http://#{@domain}#{recovery_session_path(@key)}" %><%= link_to url, url %>
+<% url = "http://#{@domain}#{recovery_session_path(@key)}" %>
+<%= link_to url, url %>
 {% endhighlight %}
 
 h3. Conclusion

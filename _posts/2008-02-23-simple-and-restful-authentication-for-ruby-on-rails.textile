@@ -78,15 +78,15 @@ Now that your migrations are programmed, migrate your database with the rake com
 {% highlight bash %}
 $ rake db:migrate          
 (in ~/my_project)
-== 1 CreateSessions: migrating ================================================
+== 1 CreateSessions: migrating ==============================================
 -- create_table(:sessions)
    -> 0.0503s
-== 1 CreateSessions: migrated (0.0522s) =======================================
+== 1 CreateSessions: migrated (0.0522s) =====================================
 
-== 2 CreatePeople: migrating ==================================================
+== 2 CreatePeople: migrating ================================================
 -- create_table(:people)
    -> 0.2419s
-== 2 CreatePeople: migrated (0.2436s) =========================================
+== 2 CreatePeople: migrated (0.2436s) =======================================
 {% endhighlight %}
 
 h3. The Session Model
@@ -496,7 +496,8 @@ Currently logged in on <%= @person.sessions.size %> computer(s).
 
 <br />
 
-<%= button_to "Unregister", @person, :method => :delete, :confirm => "Are you sure?" %>
+<%= button_to "Unregister", @person, :method => :delete, 
+                                     :confirm => "Are you sure?" %>
 {% endhighlight %}
 
 h3. Conclusion
