@@ -7,11 +7,7 @@
     
     <meta http-equiv="X-UA-Compatible" content="IE=EmulateIE7" />
     
-    {% if page.title == "home" %}
-      <title>Robert Sosinski</title>
-    {% else %}
-      <title>{{ page.title }} - Robert Sosinski</title>
-    {% endif %}
+    <title>Robert Sosinski</title>
     
     <link href="/css/style.css" media="all" rel="stylesheet" type="text/css" />
     <link href="/css/syntax.css" media="all" rel="stylesheet" type="text/css" />
@@ -26,10 +22,6 @@
       <div id="navigation" class="section">
         <h1><a href="/" title="Robert Sosinski">Robert Sosinski</a></h1>
         
-        {% unless page.title == "home" %}
-          <a class="home" href="/" title="Back Home" rel="home">Back Home</a>
-        {% endunless %}
-        
         <ul>
           <li><a class="github" href="http://github.com/robertsosinski" title="Github">Github</a></li>
           <li><a class="linkedin" href="http://www.linkedin.com/in/robertsosinski" title="Linkedin">Linkedin</a></li>
@@ -38,31 +30,18 @@
       </div>
       
       <div id="content" class="section">
-        {% unless page.title == "home" %}
-          <h2>{{ page.title }}</h2>
-        {% endunless %}
-        
-        {{ content }}
-      </div>
-      
-      <div id="categories" class="section">
-        <h2>{% unless page.title == "home" %}More {% endunless %}Tutorials by Category</h2>
-        
-        {% for category in site.categories %}
-          <div id="{{ category[0] | downcase | replace:" ","_" }}">
-            <h3>{{ category[0] }}</h3>
-            
-            <ul>
-              {% for post in category[1] %}
-                <li><a href="{{ post.url }}">{{ post.title }}</a></li>
-              {% endfor %}
-            </ul>
-          </div>
-        {% endfor %}
+        <h2>404 - Not Found</h2>
+        <p>
+          The page you are trying to access does not exist. Please try one of the following:
+        </p>
+        <ul>
+          <li>Check the URL for errors.</li>
+          <li>Take a look at the <a href="/">Home Page</a>.</li>
+          <li>Send me an <a class="email" rel="nofollow" href="" title="Email">Email</a> about what you were looking for.</li>
       </div>
       
       <div id="footer">
-        Copyright &copy; {{ site.time | date:"%Y" }} Robert Sosinski - Powered by <a href="http://github.com/mojombo/jekyll">Jekyll</a> and <a href="http://github.com/">Github</a>
+        Copyright &copy; Robert Sosinski - Powered by <a href="http://github.com/mojombo/jekyll">Jekyll</a> and <a href="http://github.com/">Github</a>
       </div>
     </div>
     
