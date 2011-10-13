@@ -125,26 +125,26 @@ $ chmod 600 ec2-keypair
 
 {% highlight bash %}
 $ ec2-run-instances ami-23b6534a -k ec2-keypair
-RESERVATION     r-xxxxxxxx      xxxxxxxxxxxx    default
-INSTANCE        i-xxxxxxxx      ami-23b6534a                    pending ec2-keypair
+RESERVATION   r-xxxxxxxx    xxxxxxxxxxxx    default
+INSTANCE      i-xxxxxxxx    ami-23b6534a    pending    ec2-keypair
 {% endhighlight %}
 
 *7.* It may take a bit for EC2 to start your new machine, but you can always check its status by typing:
 
 {% highlight bash %}
 $ ec2-describe-instances
-RESERVATION     r-xxxxxxxx      xxxxxxxxxxxx    default
-INSTANCE        i-xxxxxxxx      ami-23b6534a    ec2-xx-xxx-xx-xx.compute-1.amazonaws.com
+RESERVATION   r-xxxxxxxx    xxxxxxxxxxxx    default
+INSTANCE      i-xxxxxxxx    ami-23b6534a    ec2.compute-1.amazonaws.com
 {% endhighlight %}
 
 *8.* Great, your instance is up and running.  Take note of your server's web address (ec2-xx-xxx-xx-xx.compute-1.amazonaws.com) and ID (i-xxxxxxxx) as you will need both of these later in this tutorial.  If you forget them, you can always type the ec2-describe-instances command again.  Now, lets prep our server by enabling port 22 for SSH access and port 80 so Apache can serve web pages.
 
 {% highlight bash %}
 $ ec2-authorize default -p 22
-PERMISSION     default  ALLOWS  tcp     22      22      FROM    CIDR   0.0.0.0/0
+PERMISSION    default  ALLOWS  tcp    22    22    FROM    CIDR   0.0.0.0/0
 
 $ ec2-authorize default -p 80
-PERMISSION     default  ALLOWS  tcp     80      80      FROM    CIDR   0.0.0.0/0
+PERMISSION    default  ALLOWS  tcp    80    80    FROM    CIDR   0.0.0.0/0
 {% endhighlight %}
 
 *9.* This is the moment you have been waiting for, connecting to your new machine.  Open a new web browser window and type in your instance's web address. You should now see an Apache welcome page.
@@ -182,15 +182,15 @@ Keep in mind that you are still on the meter.  Because of this, you should shut 
 
 {% highlight bash %}
 $ ec2-terminate-instances i-xxxxxxxx
-INSTANCE        i-xxxxxxxx      running shutting-down
+INSTANCE      i-xxxxxxxx    running shutting-down
 {% endhighlight %}
 
 *2.* Take a look to see if everything is terminated.
 
 {% highlight bash %}
 $ ec2-describe-instances
-RESERVATION     r-xxxxxxxx      xxxxxxxxxxxx    default
-INSTANCE        i-xxxxxxxx      ami-23b6534a                    terminated
+RESERVATION   r-xxxxxxxx    xxxxxxxxxxxx    default
+INSTANCE      i-xxxxxxxx    ami-23b6534a               terminated
 {% endhighlight %}
 
 *3.* Done and done.

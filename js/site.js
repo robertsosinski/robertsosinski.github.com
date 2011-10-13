@@ -8,7 +8,16 @@
             return ((x.watchers > y.watchers) ? -1 : ((x.watchers < y.watchers) ? 1 : 0));
           });
           
-          new EJS({url: "/js/projects.ejs"}).update("projects", json);
+          var html = '';
+          
+          html += '<h2>Projects</h2>';
+          
+          $.each(json.repositories, function(index, repository) {
+            html += '<h3><a class="name" title="'+repository.name+'" href="'+repository.url+'">'+repository.name+'</a></h3>';
+            html += '<p>'+repository.description+'</p>';
+          });
+          
+          $("#projects").html(html);
         });
       }
       
