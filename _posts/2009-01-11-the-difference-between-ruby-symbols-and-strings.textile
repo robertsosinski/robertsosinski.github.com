@@ -110,7 +110,7 @@ puts "hello world".object_id
 # => 3084800
 {% endhighlight %}
 
-*NOTE: Your object id's will be different then the ones above.*
+*NOTE: Your object id's will be different than the ones above.*
 
 What we see above might not seem like a big issue, but behind the scenes is some heavy waste.  To understand why, we first have to understand what is going on under the hood.  An abridged explanation is as follows:
 
@@ -193,7 +193,7 @@ String: 2.24
 Symbol: 1.33
 {% endhighlight %}
 
-On average, we are getting a 40% increase solely by using Symbols.  However, Symbols are not just faster then Strings in how they are stored and used, but also in how they are compared. As Symbols of the same text share the same space on the heap, testing for equality is as quick as comparing the object id's.  Testing equality for Strings however, is a bit more computationally expensive. As every String has its own place in memory, the interpreter has to compare the actual data making up the String. A good example to visualize this type of check would be the following:
+On average, we are getting a 40% increase solely by using Symbols.  However, Symbols are not just faster than Strings in how they are stored and used, but also in how they are compared. As Symbols of the same text share the same space on the heap, testing for equality is as quick as comparing the object id's.  Testing equality for Strings however, is a bit more computationally expensive. As every String has its own place in memory, the interpreter has to compare the actual data making up the String. A good example to visualize this type of check would be the following:
 
 {% highlight ruby %}
 a = "test".split(//)
@@ -221,7 +221,7 @@ puts "#{a.join} equal to #{b.join}: #{e}"
 # => test equal to test: true
 {% endhighlight %}
 
-So, back to benchmarking.  How much faster is comparing Symbols then to Strings?  Lets find out:
+So, back to benchmarking.  How much faster is comparing Symbols than to Strings?  Lets find out:
 
 {% highlight ruby %}
 require 'benchmark'
