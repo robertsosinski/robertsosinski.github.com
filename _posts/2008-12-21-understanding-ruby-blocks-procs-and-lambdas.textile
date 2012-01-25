@@ -1,13 +1,13 @@
 ---
 layout: default
-title: Understanding Ruby Blocks, Procs and Lambdas
+title: Understanding Ruby blocks, Procs and Lambdas
 blurb: See the small, yet important, differences between Ruby's unique closure options by looking under the hood and using each in different circumstances.
 category: Ruby
 ---
 
 Blocks, Procs and lambdas (referred to as "closures":http://en.wikipedia.org/wiki/Closure_%28computer_science%29 in Computer Science) are one of the most powerful aspects of Ruby, and also one of the most misunderstood. This is probably because Ruby handles closures in a rather unique way. Making things more complicated is that Ruby has four different ways of using closures, each of which is a tad bit different, and sometimes nonsensical.  There are quite a few sites with some very good information about how closures work within Ruby. But I have yet to find a good, definitive guide out there. Hopefully, this tutorial becomes just that.
 
-h3. First Up, Blocks
+h3. First Up, blocks
 
 The most common, easiest and arguably most "Ruby like" way to use closures in Ruby is with blocks.  They have the following familiar syntax:
 
@@ -178,8 +178,8 @@ callbacks(:starting => Proc.new { puts "Starting" },
 
 So, when should you use blocks over Procs?  My logic is as follows:
 
-# Block: Your method is breaking an object down into smaller pieces, and you want to let your users interact with these pieces.
-# Block: You want to run multiple expressions atomically, like a database migration.
+# block: Your method is breaking an object down into smaller pieces, and you want to let your users interact with these pieces.
+# block: You want to run multiple expressions atomically, like a database migration.
 # Proc: You want to reuse a block of code multiple times.
 # Proc: Your method will have one or more callbacks.
 
