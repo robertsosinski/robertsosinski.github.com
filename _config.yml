@@ -1,0 +1,8 @@
+url: http://www.robertsosinski.com
+
+paginate: 1
+paginate_path: "page:num"
+
+markdown: kramdown
+permalink: pretty
+highlighter: pygments
