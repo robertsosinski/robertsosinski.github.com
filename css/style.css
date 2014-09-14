@@ -47,7 +47,7 @@ h4{
 header{
 	border-top:5px solid #d16b19;
 	background: #222222;
-	padding:70px 0 20px 0;
+	padding: 50px 0 20px 0;
 	text-align: center;
 	position: relative;
 	overflow: hidden;
@@ -209,7 +209,7 @@ header{
 
 #main-contents{
 	background-color: #eaebec;
-	padding-top:100px;
+	padding-top:50px;
 }
 .page-contents{
 	padding: 100px;
@@ -475,10 +475,12 @@ header{
  **************************************************/
 
  #footer-quote{
- 	padding:80px 0;
- 	background: url('../img/parallax-bg.jpg') no-repeat;
- 	background-attachment: fixed;
- 	background-position: 50% 50%;
+ 	/*padding:80px 0;*/
+ 	padding:20px 0 60px 0;
+ 	background-color: #dedede;
+ 	/*background: url('../img/parallax-bg.jpg') no-repeat;*/
+ 	/*background-attachment: fixed;*/
+ 	/*background-position: 50% 50%;*/
  	text-align: center;
  	position: relative;
 }
@@ -513,14 +515,14 @@ margin-bottom: 10px;
 }
 #footer-quote .quote-text{
 	font-size: 16px;
-	color: #dadada;
-	margin-top: 35px;
+	/*color: #dadada;*/
+	/*margin-top: 35px;*/
 	margin-bottom: 20px;
 }
 
 /*---Bottom section---*/
 #bottom{
-	padding: 100px 10% 80px 10%;
+	padding: 70px 10% 80px 10%;
 	/*padding: 30px 10% 80px 10%;*/
 	text-align: center;
 	background: #222222;
@@ -528,6 +530,7 @@ margin-bottom: 10px;
 }
 #social-icons{
 	margin:0;
+	margin-left: -25px;
 	padding: 0;
 	list-style: none;
 	margin-bottom: 15px;

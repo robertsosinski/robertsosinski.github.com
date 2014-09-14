@@ -1,70 +1,23 @@
 ---
 layout: default
-title: Robert Sosinski
+title: About Robert Sosinski
 ---
 
-<div class="blog-posts">
+<div class="container">
+    <div class="page-contents" style="padding: 75px">
+        <!-- <img src="/img/person2.jpg" alt="" class="vmargin40"> -->
+        <h1 class="page-title" style="text-align: center; margin-top: 0;"> {{page.title}}</h1>
 
-    <div class="container">
-        {% for post in paginator.posts %}
-        <div class="post-item">
-            <div class="post-header">
-               {% case post.layout %}
+        <p>
+        Robert is an engineer and entrepreneur who has successfully led many ambitious software projects from concept to launch.  Currently a <a href="http://www.whitehouse.gov/innovationfellows">Presidential Innovation Fellow</a> and an <a href="http://www.gpo.gov/fdsys/pkg/BILLS-112s3222is/html/BILLS-112s3222is.htm">Entrepreneur in Residence</a> to the <a href="http://www.va.gov/">U.S. Department of Veterans Affairs</a>,  Robert is reforming digital services across the Federal Government with his expertise in cutting-edge technology and effective software development practices.
+        <p>
 
-                    {% when 'post_simple' %}
-                      {% include simple_post_header.html %}
+        <p>
+        Robert also founded <a href="http://www.reactive.io">Reactive.IO</a>, a consultancy which helps businesses of all sizes build their mission-critical software right the first time.  Previously, Robert was the VP of Engineering at <a href="http://www.ticketevolution.com">Ticket Evolution</a>, where he led the development of advanced software products that serve as the backbone of the event industry’s ticket market. Before that, Robert led software buildouts at <a href="http://www.sling.com">Sling Media</a> (acquired by <a href="http://www.dish.com">Dish Network</a>), <a href="http://www.timeinc.com/">Time Inc.</a>, <a href="http://www.health.com/health/">Health.com</a>, <a href="http://www.ew.com">Entertainment Weekly</a>, <a href="http://www.upenn.edu/">The University of Pennsylvania</a>, and <a href="http://www.crunchbase.com/organization/switch2health">Switch2Health</a> (acquired by <a href="https://www.fitbit.com/">FitBit</a>).  Robert also served in the <a href="http://en.wikipedia.org/wiki/70th_Intelligence,_Surveillance_and_Reconnaissance_Wing">70th Intelligence Wing</a> of the <a href="http://www.af.mil/">U.S. Air Force</a> as a <a href="http://en.wikipedia.org/wiki/Cryptography">Cryptographic Specialist</a> while stationed in Tokyo, Japan.
+        </p>
 
-                    {% when 'post_image' %}
-                      {% include image_post_header.html %}
-
-                    {% when 'post_video' %}
-                      {% include video_post_header.html %}
-
-                    {% when 'post_audio' %}
-                      {% include audio_post_header.html %}
-
-                    {% else %}
-                      {% include simple_post_header.html %}
-
-               {% endcase %}
-            </div>
-            <div class="post-body">
-                <div class="meta">
-                    <span class="date">{{ post.date | date_to_long_string }}</span>
-                </div>
-                <a href="{{ post.url }}">
-                    <h2 class="title">{{ post.title }}</h2>
-                </a>
-                <div class="content">
-                    {{ post.excerpt }}
-                </div>
-            </div>
-            <a href="{{ post.url }}" class="post-more">Read more</a>
-
-            <ul class="post-socials">
-                <li><a href="https://twitter.com/intent/tweet?original_referer={{site.url}}{{page.url}}&url={{site.url}}{{post.url}}&text={{post.title}}" target="_blank"><i class="fa fa-twitter"></i></a></li>
-
-                <li><a href="http://www.linkedin.com/shareArticle?mini=true&url={{site.url}}{{post.url}}&title={{post.title}}&summary={{post.excerpt}}" target="_blank"><i class="fa fa-linkedin"></i></a></li>
-
-                <li><a href="https://www.facebook.com/sharer/sharer.php?u={{site.url}}{{post.url}}&t={{post.title}}" target="_blank"><i class="fa fa-facebook"></i></a></li>
-
-                <li><a href="https://plus.google.com/share?url={{site.url}}{{post.url}}" target="_blank"><i class="fa fa-google-plus"></i></a></li>
-            </ul>
-        </div>
-        {% endfor %}
-    </div>
-
-    <div id="blog-pagination">
-        <ul>
-            {% if paginator.previous_page %}
-            <li class="prev"><a href="{{paginator.previous_page_path}}"><i class="fa fa-angle-left"></i><span>Prev</span></a></li>
-            {% endif %}
-            {% if paginator.previous_page or paginator.next_page%}
-            <li class="separator"></li>
-            {% endif %}
-             {% if paginator.next_page %}
-            <li class="next"><a href="{{paginator.next_page_path}}"><span>Next</span><i class="fa fa-angle-right"></i></a></li>
-            {% endif %}
-        </ul>
+        <p>
+        Robert holds a B.S. in Computer and Information Science from the <a href="http://umuc.edu/">The University of Maryland University College</a>, and a M.S. in Management of Technology from the <a href="http://engineering.nyu.edu/">Polytechnic Institute of NYU</a>.  Furthermore, Robert often presents at technology meetups about <a href="http://www.reactive.io/academy/presentations/postgresql/mvcc/mvcc-presentation.pdf">database theory</a>, <a href="http://www.reactive.io/academy/presentations/security/cryptography/cryptography-presentation.pdf">cryptography</a>, and <a href="http://www.reactive.io/academy/presentations/management/scrum/scrum-presentation.pdf">agile project management</a>; while also volunteering at groups that help transition veterans into <a href="http://www.vetsintech.co/">technology</a> and <a href="http://www.techstars.com/patriotbootcamp/">entrepreneurship</a>.
+        </p>
     </div>
 </div>

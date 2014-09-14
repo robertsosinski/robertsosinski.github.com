@@ -1,6 +1,6 @@
 url: http://www.robertsosinski.com
 
-paginate: 1
+paginate: 10
 paginate_path: "page:num"
 
 markdown: kramdown
