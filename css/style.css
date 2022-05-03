@@ -71,9 +71,8 @@ header{
 #site-heading .subtitle{
 	font-weight: 300;
 	color: #d16b19;
-	text-transform: uppercase;
 	margin:0 0 35px 0;
-	font-size: 12px;
+	font-size: 14px;
 }
 
 /*---Navigation----*/
